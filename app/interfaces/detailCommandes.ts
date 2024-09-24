@@ -82,4 +82,5 @@ export interface Commande {
 
 export interface DetailCommandesResponse {
     commandes: Commande[];
+    total: number; // Ajoutez la propriété total
 }

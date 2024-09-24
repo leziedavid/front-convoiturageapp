@@ -11,7 +11,7 @@ export default function page() {
             <SectionTwo/>
             <SectionFive/>
             {/* <SectionFour/> */}
-            <SectionSix/>
+            {/* <SectionSix/> */}
         </>
 
     )

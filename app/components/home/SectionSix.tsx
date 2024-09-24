@@ -7,6 +7,7 @@ import Link from 'next/link';
 const SectionSix: React.FC = () => {
     return (
 
+    
         <section aria-labelledby="sale-heading" className="overflow-hidden pt-32 sm:pt-14">
             <div className="bg-black">
                 <div className="mx-auto max-w-7xl">
@@ -21,7 +22,7 @@ const SectionSix: React.FC = () => {
                                 voire
                             </h2>
                             <div className="mt-6 text-base">
-                                <Link href="/trajet" className="font-semibold text-white">
+                                <Link href="/trajets/details" className="font-semibold text-white">
                                     Trouver un trajet
                                     <span aria-hidden="true"> &rarr;</span>
                                 </Link>

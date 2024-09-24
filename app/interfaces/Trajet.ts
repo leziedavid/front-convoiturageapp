@@ -1,5 +1,7 @@
 // trajet.ts
 
+import { Arret } from "./GlobalType";
+
 // Interface pour représenter les coordonnées géographiques
 export interface Coordonnees {
     lat: number;
@@ -86,9 +88,11 @@ export interface Trajet {
     commandes: Commande[];
     utilisateur: Utilisateur;
     vehicule: Vehicule;
+    arrets: Arret[];
 }
 
 // Interface pour représenter la réponse de l'API contenant un tableau de trajets
 export interface TrajetResponse {
     trajets: Trajet[];
+    total: number; // Ajoutez la propriété total
 }

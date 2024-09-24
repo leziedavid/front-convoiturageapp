@@ -11,9 +11,9 @@ import { Tab, TabGroup, TabList } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 import { getSettings } from '@/app/services/Auth';
 import { User,Transaction } from '@/app/interfaces/GlobalType';
-import TransactionHistory from '@/app/components/TransactionHistory';
-import MonCompte from '@/app/components/MonCompte';
-import ListesVeicules from '@/app/components/ListesVeicules';
+import TransactionHistory from '@/app/components/history/TransactionHistory';
+import MonCompte from '@/app/components/tabs/MonCompte';
+import ListesVeicules from '@/app/components/tabs/ListesVeicules';
 
 const Alltransactions = [
     { id: '1', date: '2024-08-21', description: 'Recharge de portefeuille', amount: '10000', paymentMethod: 'Orange Money', status: 'Completed' },
@@ -34,14 +34,13 @@ export default function Page() {
     const [data, setData] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-    
 
     const fetchUsers = async () => {
         try {
             const res = await getSettings();
             if (res.code === 200) {
                 setData(res.data)
-                console.log(res.data);
+                console.log(data?.rechargements);
             }
         } catch (err) {
             setError('Error fetching user info');
@@ -49,14 +48,13 @@ export default function Page() {
     };
 
     useEffect(() => {
-        // setTransactions(transactions);
         fetchUsers();
-
-    }, [transactions]);
+    }, []);
 
     // Définir une image de remplacement si photo_url est undefined ou null
     const photoUrl = data?.photo_url ?? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
     const vehicules = data?.vehicules || [];
+    const recharge = data?.rechargements || [];
 
     return (
         <>
@@ -85,11 +83,13 @@ export default function Page() {
                                         <div className="hidden col-span-1 md:col-span-3 group md:block flex-shrink-0 ">
                                             {/* Replace with your actual component */}
                                             <UserProfil />
+
                                             <div className=" sm:flex flex-col gap-3 py-5 ">
                                                 <div className="basis-1/5 h-lvh">
                                                     <DesktopNavBarDriver />
                                                 </div>
                                             </div>
+
                                         </div>
                                         <div className="col-span-1 sm:col-span-9 mt-6 sm:mt-0">
                                             <div className="mx-auto max-w-7xl">
@@ -100,7 +100,9 @@ export default function Page() {
                                                     </p>
                                                 </div>
                                             </div>
+
                                             <div className="w-full px-2 py-4 sm:px-0">
+
                                                 <Tab.Group>
 
                                                     <Tab.List className="flex space-x-1 rounded-xl bg-gray-900/20 p-1">
@@ -133,7 +135,7 @@ export default function Page() {
 
                                                         <Tab.Panel className="rounded-xl bg-gray-100 p-3 ring-white/60 ring-offset-2 ring-offset-white focus:outline-none focus:ring-2">
 
-                                                            <TransactionHistory transactions={Alltransactions} />
+                                                            <TransactionHistory transactions={recharge} />
 
                                                         </Tab.Panel>
 
@@ -142,6 +144,7 @@ export default function Page() {
                                                 </Tab.Group>
 
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

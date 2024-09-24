@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState,useEffect } from 'react';
-import Image from 'next/image';
-import { User } from '../interfaces/GlobalType';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { userFomeOnSubmit } from '../services/UserServices';
-import toast, { Toaster } from 'react-hot-toast';
-import Preloader from './Preloader';
-import TrajetPreloader from './TrajetPreloader';
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
+import { User } from '../../interfaces/GlobalType';
+import { updateUser, updateUserMdp, userFomeOnSubmit } from '../../services/UserServices';
+import TrajetPreloader from '../Preloader/TrajetPreloader';
 
 
 // Définir les props pour le composant
@@ -39,7 +38,7 @@ const NewPasswordSchema = z.object({
 type FormValues = z.infer<typeof MySchema>;
 type FormPasswordValues = z.infer<typeof NewPasswordSchema>;
 
-const MonCompte: React.FC<UsersCompte> = ({ users }) => {
+const UsersCompte: React.FC<UsersCompte> = ({ users }) => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
@@ -99,9 +98,9 @@ const MonCompte: React.FC<UsersCompte> = ({ users }) => {
         }
 
         try {
-            const apiResponse = await userFomeOnSubmit(formData);
+            const apiResponse = await updateUser(formData);
 
-            if (apiResponse.code === 201) {
+            if (apiResponse.code === 200) {
                 toast.success('Informations mises à jour avec succès!');
                 resetPersonal();
             } else if (apiResponse.code === 400) {
@@ -121,15 +120,15 @@ const MonCompte: React.FC<UsersCompte> = ({ users }) => {
         if (data.password) formData.append('password', data.password);
         if (data.newPassword) formData.append('newPassword', data.newPassword);
         try {
-            const apiResponse = await userFomeOnSubmit(formData);
+            const apiResponse = await updateUserMdp(formData);
 
-            if (apiResponse.code === 201) {
+            if (apiResponse.code === 200) {
                 toast.success('Mot de passe changé avec succès!');
                 resetPersonal();
             } else if (apiResponse.code === 400) {
                 toast.error(apiResponse.messages!);
             } else if (apiResponse.code === 500) {
-                toast.error("Erreur interne du serveur.");
+                toast.error("Current password is incorrect");
             }
         } catch (error) {
             console.error('Error:', error);
@@ -148,9 +147,6 @@ const MonCompte: React.FC<UsersCompte> = ({ users }) => {
 
     return (
         <>
-
-
-
 
             {loading ? (
 
@@ -269,4 +265,4 @@ const MonCompte: React.FC<UsersCompte> = ({ users }) => {
     );
 };
 
-export default MonCompte;
+export default UsersCompte;

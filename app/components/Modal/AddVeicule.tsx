@@ -1,21 +1,22 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast, { Toaster } from 'react-hot-toast';
 import { CarFront, SaveAll, X } from 'lucide-react';
-import { VehiculeFomeOnSubmit } from '@/app/services/VehiculeServices';
+import { updateVehicule, VehiculeFomeOnSubmit } from '@/app/services/VehiculeServices';
 import jwt from 'jsonwebtoken';
 import { BaseResponse } from '@/app/interfaces/ApiResponse';
-
+import { Vehicule } from '@/app/interfaces/GlobalType';
 
 // Définir les props pour le composant
 interface UsersCompte {
     fetchUsers: () => Promise<void>;
     closeDrawer: () => void;
+    details: Vehicule | undefined,
 }
 
 interface DecodedToken {
@@ -27,7 +28,6 @@ const schema = z.object({
     marque: z.string().min(1, "La marque est requise"),
     modele: z.string().min(1, "Le modèle est requis"),
     annee: z.string().min(1, "L'année est requise"),
-    // annee: z.number().min(1900, "L'année est requise").max(new Date().getFullYear(), "L'année ne peut pas être dans le futur"),
     plaque: z.string().min(1, "La plaque est requise"),
     couleur: z.string().min(1, "La couleur est requise"),
     permis: z.string().min(1, "Le permis est requis"),
@@ -36,59 +36,92 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const AddVeicule: React.FC<UsersCompte> = ({ fetchUsers, closeDrawer, }) => {
+const AddVeicule: React.FC<UsersCompte> = ({ fetchUsers, closeDrawer, details }) => {
 
     const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    // Initialiser react-hook-form
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(schema),
     });
 
+    useEffect(() => {
+        if (details) {
+            // Pré-remplir les champs si details est défini
+            reset({
+                marque: details.marque,
+                modele: details.modele,
+                annee: details.annee.toString(), // Convertir en string pour le formulaire
+                plaque: details.plaque,
+                couleur: details.couleur || '',
+                permis: details.permis || '',
+                carte_grise: details.carte_grise || '',
+            });
+        }
+    }, [details, reset]);
+
     const onSubmit = async (data: FormData) => {
         setLoading(true);
-    
+
         const token = localStorage.getItem('token');
         if (!token) {
             toast.error('Token manquant');
             setLoading(false);
             return;
         }
-    
+
         // Décoder le token
         const decodedToken = jwt.decode(token) as DecodedToken | null;
-    
+
         if (!decodedToken) {
             toast.error('Votre session a expiré, merci de vous reconnecter.');
             setLoading(false);
             return;
         }
-    
+
         const utilisateur_id = decodedToken.id;
-    
+
         // Convertir l'année en nombre
         const dataWithUserId = {
             ...data,
             utilisateur_id,
             annee: Number(data.annee) // Convertir l'année en nombre
         };
-    
-        try {
-            const response = await VehiculeFomeOnSubmit(dataWithUserId);
-    
-            if (response.code === 201 && response.data) {
-                toast.success('Véhicule ajouté avec succès');
-                await fetchUsers();
-                closeDrawer();
-            } else {
-                toast.error("Erreur lors de l'ajout du véhicule.");
-            }
-        } catch (error: any) {
-            toast.error("Erreur lors de la requête : " + error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
+        try {
+
+            if (details) {
+
+                const response = await updateVehicule(details.id, dataWithUserId);
+                if (response.code === 200 && response.data) {
+                    toast.success('Véhicule mis à jour avec succès');
+                    await fetchUsers();
+                    closeDrawer();
+                } else {
+                    toast.error("Erreur lors de la mise a jour  du véhicule.");
+                
+                }
+
+            }else{
+
+                const response = await VehiculeFomeOnSubmit(dataWithUserId);
+                if (response.code === 201 && response.data) {
+                    toast.success('Véhicule ajouté avec succès');
+                    await fetchUsers();
+                    closeDrawer();
+                } else {
+                    toast.error("Erreur lors de l'ajout du véhicule.");
+                
+                }
+
+            }
+
+            } catch (error: any) {
+                toast.error("Erreur lors de la requête : " + error.message);
+            } finally {
+                setLoading(false);
+            }
+    };
 
     return (
         <>

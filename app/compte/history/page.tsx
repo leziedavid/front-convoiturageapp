@@ -1,21 +1,23 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Calendar, Check, Route,Map, ChevronRight } from 'lucide-react';
+import TrajetPreloader from '@/app/components/Preloader/TrajetPreloader';
+import ClientTrajetNotFound from '@/app/components/error/ClientTrajetNotFound';
+import UserProfil from '@/app/components/includes/userProfil';
+import { getAllPassageerCommandes } from '@/app/services/PassagerServices';
+import { DateHeur, DateTime } from '@/app/services/dateUtils';
+import { Calendar, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import DesktopNavBar from '../../components/includes/DesktopNavBar';
 import MobileNavBar from '../../components/includes/MobileNavBar';
-import { BaseResponse } from '../../interfaces/ApiResponse';
-import { Commande, User } from '../../interfaces/GlobalType';
-import { getUserInfo } from '../../services/Auth';
-import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation'
-import { getAllPassageerCommandes } from '@/app/services/PassagerServices';
-import TrajetPreloader from '@/app/components/TrajetPreloader';
-import ClientTrajetNotFound from '@/app/components/ClientTrajetNotFound';
-import { DateHeur, DateTime } from '@/app/services/dateUtils';
-import UserProfil from '@/app/components/includes/userProfil';
+import { Commande } from '../../interfaces/GlobalType';
+import Pagination from '@/app/components/Pagination/Pagination';
+import Modal from '@/app/components/Modal/Modal';
+import { sendStateCommande, sendStateCommandeByUsers } from '@/app/services/CommandeService';
+
+
+const PAGE_SIZE = 3; // Nombre de trajets par page
 
 export default function Page() {
 
@@ -26,36 +28,48 @@ export default function Page() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const [total, setTotal] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState<number>(1); // Page actuelle
+    const [pageSize, setPageSize] = useState<number>(PAGE_SIZE); // Taille de la page
 
-        const fetchUserInfo = async () => {
 
-            try {
+    const [actionMessage, setActionMessage] = useState("");
+    const [onDeleteMessage, setOnDeleteMessage] = useState("");
+    const [onCloseMessage, setOnCloseMessage] = useState("");
+    const [idCommande, setIdCommande] = useState("");
+    const [step, setStep] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-                const res = await  getAllPassageerCommandes()
 
-                if(res.code==200){
+    const fetchUserInfo = async () => {
 
-                    setResponse(res.data);
+        try {
 
-                }
+            const res = await  getAllPassageerCommandes(currentPage, pageSize)
 
-            } catch (err) {
+            if(res.code==200){
 
-                setError('Error fetching user info');
-                console.error('Error fetching user info:', err);
+                setResponse(res.data);
+                setTotal(res.total);
 
-            } finally {
             }
-        };
 
+        } catch (err) {
+
+            setError('Error fetching user info');
+            console.error('Error fetching user info:', err);
+
+        } finally {
+        }
+    };
+
+    useEffect(() => {
         fetchUserInfo();
-
         setTimeout(() => {
             setLoading(false);
         }, 1000);
 
-    }, []);
+    }, [currentPage, pageSize]);
 
     const orders = [
         {
@@ -80,6 +94,35 @@ export default function Page() {
         // Ajoutez plus de commandes ici si nécessaire
     ];
     
+
+
+    const handleDelete = async (id: string) => {
+        const newStatus = "dismissed";
+        await sendStateCommandeByUsers(id, newStatus);
+        setIsModalOpen(false);
+        fetchUserInfo();
+    };
+
+
+    const handleValidate = async (id: string) => {
+        const newStatus = "validated";
+        await sendStateCommandeByUsers(id, newStatus);
+        setIsModalOpen(false);
+        fetchUserInfo();
+    };
+
+
+    const RejeterCommande = (value: string) => {
+        setStep(2);
+        setIdCommande(value);
+        setActionMessage("Êtes-vous sûr de vouloir annuler cette commande ?");
+        setOnDeleteMessage("OUI,ANNULER");
+        setOnCloseMessage("FERMER");
+        setIsModalOpen(true);
+    };
+
+
+
     return (
 
         <>
@@ -187,8 +230,25 @@ export default function Page() {
                                                                             </div>
                                                                         </div>
 
-                                                                        <div className="absolute bottom-2 right-2 text-sm flex justify-items-center items-center">
-                                                                            <Calendar name="Calendar" className="h-5" /> le  { DateTime(order.date_creation)}
+                                                                        <div className="absolute bottom-2 right-2 text-sm flex items-center space-x-2">
+                                                                            <Calendar name="Calendar" className="h-5" />
+                                                                            <span>le {DateTime(order.date_creation)}</span>
+
+                                                                                {(order.statut_commande === 'pending') && (
+                                                                                    <button onClick={() => RejeterCommande(order.id)} type="button"
+                                                                                        className="bg-red-600 text-slate-100 px-1 rounded py-0 text-sm md:text-base">
+                                                                                        Annuler 👎
+                                                                                    </button>
+                                                                                )}
+
+                                                                                {order.statut_commande === 'dismissed' && (
+                                                                                    <span className="bg-[#f7872e] text-white text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded border border-white">
+                                                                                        <svg className="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                                                            <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                                                                                        </svg>
+                                                                                        <span className="text-white text-sm me-1.5">Commande annulée</span>
+                                                                                    </span>
+                                                                                )}
                                                                         </div>
 
                                                                     </div>
@@ -197,6 +257,16 @@ export default function Page() {
                                                             ) : (
                                                                 <ClientTrajetNotFound/>
                                                             )}
+
+                                                            {response && response.length? (
+                                                                <Pagination
+                                                                    currentPage={currentPage}
+                                                                    pageSize={pageSize}
+                                                                    total={total}
+                                                                    onPageChange={setCurrentPage}
+                                                                    onPageSizeChange={setPageSize}
+                                                                />
+                                                            ) : null}
 
                                                     </div>
 
@@ -216,6 +286,19 @@ export default function Page() {
                     {/* Menu mobile */}
                 </main>
             </div>
+
+
+            <Modal
+                buttonColor="bg-red-600"
+                actionMessage={actionMessage}
+                onDeleteMessage={onDeleteMessage}
+                onCloseMessage={onCloseMessage}
+                id={idCommande}
+                onDelete={step === 1 ? () => handleValidate(idCommande) : () => handleDelete(idCommande)}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
+
 
         </>
 

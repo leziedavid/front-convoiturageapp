@@ -5,6 +5,10 @@ interface Point {
     lon: number;
 }
 
+interface Wallet {
+    balance: number;
+}
+
 interface Trajet {
     id: string;
     utilisateur_id: string;
@@ -43,6 +47,8 @@ interface UserDetail {
     is_active: boolean;
     verification_status: string;
     token: string | null;
+    wallet: Wallet,
+    rechargements:Rechargements
 }
 
 // Define the main interface for the API response
@@ -53,4 +59,14 @@ interface Statistics {
     totalAmount: number;
     lastTrajet: Trajet;
     userDetail: UserDetail;
+}
+
+interface Rechargements {
+amount: string;
+date: string;
+description: string;
+paymentMethod: string;
+status: string;
+utilisateurId: string;
+walletId: string;
 }

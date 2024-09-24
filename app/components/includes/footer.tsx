@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
                     <div className="grid gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
                         <div className="flex justify-between items-center">
                             <p className="text-sm text-gray-400">
-                                {currentYear} © Floti - <a href="#">Zoyothemes.com</a> Terms Conditions & Policy.
+                                {currentYear} © Covoit&apos;Ivoire - <a href="/">covoitIvoire.com</a> By Tdllezie.
                             </p>
                         </div>
                         <div>

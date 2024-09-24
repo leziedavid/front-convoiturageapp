@@ -1,13 +1,12 @@
 // services/contactService.ts
-
-
 import { BaseResponse } from "../interfaces/ApiResponse";
-const BASE_URL = 'http://localhost:4000/api';
-
+import { getBaseUrl } from "./baseUrl";
 // Définir une fonction pour envoyer les données du formulaire de contact
+
 export const sendContactMessage = async (nom: string, email: string, sujet: string, message: string): Promise<BaseResponse<any>> => {
+    
     try {
-        const response = await fetch(`${BASE_URL}/contact`, {
+        const response = await fetch(`${getBaseUrl()}/contact`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

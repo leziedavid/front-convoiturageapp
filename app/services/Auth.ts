@@ -1,9 +1,7 @@
 
 import { BaseResponse } from "../interfaces/ApiResponse";
 import jwt from 'jsonwebtoken';
-
-const BASE_URL = 'http://localhost:4000/api';
-
+import { getBaseUrl } from "./baseUrl";
 interface DecodedToken {
     id: string;
     exp: number;
@@ -11,7 +9,7 @@ interface DecodedToken {
 
 export const signIn = async (email: string, password: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/auth/login`, {
+        const response = await fetch(`${getBaseUrl()}/auth/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
             body: JSON.stringify({ email, password }),
@@ -36,7 +34,7 @@ export const getUserInfo = async (): Promise<BaseResponse<any>> => {
         }
 
         const id = decodedToken.id;
-        const response = await fetch(`${BASE_URL}/users/${id}/root/detail`, {
+        const response = await fetch(`${getBaseUrl()}/users/${id}/root/detail`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json',},
         });
@@ -64,7 +62,7 @@ export const getSettings = async (): Promise<BaseResponse<any>> => {
         }
 
         const id = decodedToken.id;
-        const response = await fetch(`${BASE_URL}/settings/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/settings/${id}`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json',},
         });
@@ -73,6 +71,41 @@ export const getSettings = async (): Promise<BaseResponse<any>> => {
     } catch (error) {
 
         console.error('Error getting user info:', error);
+        throw error;
+    }
+};
+
+
+export const sendOtp = async (email: string): Promise<BaseResponse<any>> => {
+    try {
+        const response = await fetch(`${getBaseUrl()}/otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const resetPassword = async (newPassword: string): Promise<BaseResponse<any>> => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Token manquant');
+    }
+
+    try {
+        const response = await fetch(`${getBaseUrl()}/auth/reset-password`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password: newPassword }),
+        });
+        return await response.json();
+    } catch (error) {
         throw error;
     }
 };

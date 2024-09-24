@@ -1,97 +1,133 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { Box, Calendar, ChevronRight, Lock, Map, Users, X } from 'lucide-react';
+import { TrajetResponse,Trajet } from '@/app/interfaces/Trajet';
+import { DateHeur, DateTime } from '@/app/services/dateUtils';
+import { getDriverTrajet } from '@/app/services/DriverServices';
+import { Calendar, ChevronRight, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import DesktopNavBarDriver from '../../components/includes/Driver/DesktopNavBarDriver';
 import MobileNavBarDriver from '../../components/includes/Driver/MobileNavBarDriver';
-import { BaseResponse } from '../../interfaces/ApiResponse';
-import { User } from '../../interfaces/GlobalType';
-import { getUserInfo } from '../../services/Auth';
-import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 import UserProfil from '../../components/includes/userProfil';
-import { getDriverTrajet } from '@/app/services/DriverServices';
-import { TrajetResponse } from '@/app/interfaces/Trajet';
-import { DateHeur, DateTime } from '@/app/services/dateUtils';
-import Preloader from '@/app/components/Preloader';
-import TrajetPreloader from '@/app/components/TrajetPreloader';
-import TrajetNotFound from '@/app/components/TrajetNotFound';
+import TrajetPreloader from '@/app/components/Preloader/TrajetPreloader';
+import TrajetNotFound from '@/app/components/error/TrajetNotFound';
+import Pagination from '@/app/components/Pagination/Pagination';
+import { getAllTrajetById } from '@/app/services/TrajetServices';
+import MapComponent from '@/app/components/Map/MapComponent';
+import Modal from '@/app/components/Modal/Modal';
 
-const trajetsX = [
-    {
-        date: '10/10/2021',
-        montant: '4 000 XOF',
-        heureDepart: '08h00',
-        adresseDepart: 'Abidjan, Côte d’Ivoire',
-        heureArrivee: '12h00',
-        adresseArrivee: 'Agboville, Côte d’Ivoire, Riviera',
-    },
-    {
-        date: '10/10/2021',
-        montant: '4 000 XOF',
-        heureDepart: '08h00',
-        adresseDepart: 'Abidjan, Côte d’Ivoire',
-        heureArrivee: '12h00',
-        adresseArrivee: 'Agboville, Côte d’Ivoire, Riviera',
-    },
-    {
-        date: '10/10/2021',
-        montant: '4 000 XOF',
-        heureDepart: '08h00',
-        adresseDepart: 'Abidjan, Côte d’Ivoire',
-        heureArrivee: '12h00',
-        adresseArrivee: 'Agboville, Côte d’Ivoire, Riviera',
-    },
-    // Ajoute plus de trajets ici si nécessaire
-];
+
+const PAGE_SIZE = 3; // Nombre de trajets par page
 
 export default function Page() {
 
     const router = useRouter();
     const [response, setResponse] = useState<TrajetResponse | null>(null);
+    const [data, setData] = useState<Trajet | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showDrawer, setShowDrawer] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState<number>(1); // Page actuelle
+    const [pageSize, setPageSize] = useState<number>(PAGE_SIZE); // Taille de la page
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleDelete = (id: number, action: number) => {
-        setIsModalOpen(false); // Fermer le modal après l'action
+    const [actionMessage, setActionMessage] = useState("");
+    const [onDeleteMessage, setOnDeleteMessage] = useState("");
+    const [onCloseMessage, setOnCloseMessage] = useState("");
+    const [idCommande, setIdCommande] = useState("");
+    const [step, setStep] = useState(0);
+
+    const AccepterCommande = async (value: string) => {
+        setIdCommande(value);
+        setStep(1);
+        setIsModalOpen(true);
+        setActionMessage("Êtes-vous sûr de vouloir accepter cette commande ?");
+        setOnDeleteMessage("OUI,ACCEPTER");
+        setOnCloseMessage("FERMER");
     };
+
+    const handleDelete = (value: string) => {
+        setStep(2);
+        setIdCommande(value);
+        setActionMessage("Êtes-vous sûr de vouloir annuler cette commande ?");
+        setOnDeleteMessage("OUI,ANNULER");
+        setOnCloseMessage("FERMER");
+        setIsModalOpen(true);
+    };
+
+    
+
 
     const handleNavigateToNewTrajet = () => {
         router.push('/conducteur/nouveau');
     };
-    useEffect(() => {
 
+    const OpenDrawer = async (id: string) => {
+        try {
+            const res = await getAllTrajetById(id);
+            if (res.code === 200) {
+                setData(res.data);
+                    setTimeout(() => {
+                    setLoading(false);
+                }, 1500);
+            } else {
+                console.error('Erreur lors de la récupération des trajets:', res);
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'appel de getAllTrajetById:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (data) {
+            const updatedCoordinates = [
+                { lat: data.point_depart.lat, lng: data.point_depart.lon },
+                { lat: data.point_arrivee.lat, lng: data.point_arrivee.lon },
+                ...data.arrets.map(arret => ({
+                    lat: arret.nom.lat,
+                    lng: arret.nom.lon
+                }))
+            ];
+            setCoordinates(updatedCoordinates);
+            setShowDrawer(true);
+
+        }
+    }, [data]);
+    
+
+
+    useEffect(() => {
         const fetchTrajetDrivers = async () => {
 
             try {
-
+    
                 setLoading(true);
-                const res = await getDriverTrajet();
+                const res = await getDriverTrajet(currentPage, pageSize);
                 if (res.code === 200) {
                     const adaptedResponse: TrajetResponse = {
-                        trajets: res.data
+                        trajets: res.data,
+                        total: res.total
                     };
+                    console.log(res.total);
                     setResponse(adaptedResponse);
                     setTimeout(() => {
                         setLoading(false);
                     }, 1000);
-                    console.log(res.data);
                 }
             } catch (err) {
-
+    
                 setError('Error fetching user info');
                 console.error('Error fetching user info:', err);
                 setLoading(false);
-
+    
             }
         };
-
         fetchTrajetDrivers();
-    }, []);
+
+    }, [currentPage,pageSize]);
 
 
     return (
@@ -109,6 +145,7 @@ export default function Page() {
                     </header>
                 </div>
                 <main className="-mt-32">
+
                     <div className="mx-auto max-w-7xl px-2 pb-12 sm:px-6 lg:px-8">
                         <div className="rounded-lg bg-white p-2">
                             <div className="rounded-lg p-2 pb-14 sm:pb-0">
@@ -152,6 +189,7 @@ export default function Page() {
                                                 <div className="mx-auto max-w-2xl space-y-5 sm:px-2 lg:max-w-4xl lg:px-0">
 
                                                     {response && response?.trajets.length ? (
+
                                                         response.trajets.map((trajet, index) => (
 
                                                             <div key={index} className="relative shadow-md border-none bg-white rounded-md border-2 p-3">
@@ -176,7 +214,7 @@ export default function Page() {
                                                                             </div>
                                                                             <div className="md:text-left">
                                                                                 <span className="text-xs text-neutral-700 md:text-sm font-bold w-16">
-                                                                                    {trajet.ville_depart}   Cote d’ivoire,adjamé, 253 rue 263
+                                                                                    {trajet.ville_depart}
                                                                                 </span>
                                                                             </div>
                                                                         </div>
@@ -192,7 +230,7 @@ export default function Page() {
                                                                             </div>
                                                                             <div className="md:text-left">
                                                                                 <span className="text-xs text-neutral-700 md:text-sm font-bold">
-                                                                                {trajet.ville_arrivee} Cote d’ivoire,adjamé, 253 rue 263
+                                                                                {trajet.ville_arrivee}
                                                                                 </span>
                                                                             </div>
                                                                         </div>
@@ -201,7 +239,13 @@ export default function Page() {
 
                                                                 <div className="flex justify-end gap-2">
 
-                                                                    <button onClick={() => setShowDrawer(true)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-[#f7872e] hover:bg-[#a1683a]">
+                                                                    {trajet.commandes.length > 0 ? (
+                                                                        <button onClick={() => OpenDrawer(trajet.id)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-green-700 hover:bg-[#a1683a]">
+                                                                        Démarrer le trajet
+                                                                    </button>
+                                                                    ) : null}
+
+                                                                    <button onClick={() => OpenDrawer(trajet.id)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-[#f7872e] hover:bg-[#a1683a]">
                                                                         Détail du trajet
                                                                     </button>
 
@@ -211,18 +255,32 @@ export default function Page() {
                                                                         </button>
                                                                     ) : null}
 
+
+
                                                                 </div>
+
                                                             </div>
                                                         ))
 
                                                     ) : (
                                                         <TrajetNotFound/>
                                                     )}
+
+                                                    
+                                                    {response && response.trajets && response.trajets.length > 0 ? (
+                                                        <Pagination
+                                                            currentPage={currentPage}
+                                                            pageSize={pageSize}
+                                                            total={response.total || 0}
+                                                            onPageChange={setCurrentPage}
+                                                            onPageSizeChange={setPageSize}
+                                                        />
+                                                    ) : null}
+                                                    
                                                 </div>
                                                 
                                                 )}
             
-
                                             </section>
                                         </div>
                                     </div>
@@ -230,6 +288,7 @@ export default function Page() {
                             </div>
                         </div>
                     </div>
+
                     {showDrawer && (
                         <div className="relative z-30" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
                             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
@@ -249,8 +308,7 @@ export default function Page() {
                                                     </div>
                                                 </div>
                                                 <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                                                    {/* Contenu du drawer */}
-                                                    kjsqdfbsjkb
+                                                    <MapComponent coordinates={coordinates} />
                                                 </div>
                                             </div>
                                         </div>
@@ -259,6 +317,7 @@ export default function Page() {
                             </div>
                         </div>
                     )}
+
                     {/* Menu mobile */}
                     <MobileNavBarDriver />
                     {/* Menu mobile */}
@@ -266,6 +325,20 @@ export default function Page() {
             </div>
 
 
+
+            <Modal
+                buttonColor="bg-red-600"
+                actionMessage={actionMessage}
+                onDeleteMessage={onDeleteMessage}
+                onCloseMessage={onCloseMessage}
+                id={idCommande}
+                onDelete={step === 1 ? () => AccepterCommande(idCommande) : () => handleDelete(idCommande)}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
+
+
         </>
     );
+
 }

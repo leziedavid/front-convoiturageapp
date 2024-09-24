@@ -1,18 +1,17 @@
 "use client";
 
-import { Calendar, Check, Map } from 'lucide-react';
-import Image from 'next/image';
+import { Calendar, Map } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
-import ClientTrajetNotFound from '../components/ClientTrajetNotFound';
+import ClientTrajetNotFound from '../components/error/ClientTrajetNotFound';
 import DesktopNavBar from '../components/includes/DesktopNavBar';
 import MobileNavBar from '../components/includes/MobileNavBar';
-import TrajetPreloader from '../components/TrajetPreloader';
+import UserProfil from '../components/includes/userProfil';
+import TrajetPreloader from '../components/Preloader/TrajetPreloader';
 import { Commande } from '../interfaces/detailCommandes';
 import { DateHeur, DateTime } from '../services/dateUtils';
 import { getPassageerCommandes } from '../services/PassagerServices';
-import UserProfil from '../components/includes/userProfil';
 
 export default function Page() {
 
@@ -101,8 +100,10 @@ export default function Page() {
 
 
                                             {loading ? (
-
+                                                <>
                                                 <TrajetPreloader />
+                                                <TrajetPreloader />
+                                                </>
 
                                             ) : (
 

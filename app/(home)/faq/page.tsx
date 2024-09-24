@@ -15,37 +15,35 @@ export default async function Page() {
     const faqs: FAQ[] = [
         {
             id: 1,
-            question: "What's the best thing about Switzerland?",
-            answer: "I don't know, but the flag is a big plus. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cupiditate laboriosam fugiat.",
+            question: "Comment fonctionne Covoit’Ivoire ?",
+            answer: "Covoit’Ivoire est une plateforme qui permet aux conducteurs et aux passagers de partager des trajets en voiture. Les conducteurs publient leurs trajets disponibles, et les passagers peuvent réserver une place dans le véhicule. Nous assurons la sécurité et le confort des trajets grâce à un système de vérification et à une interface conviviale.",
         },
         {
             id: 2,
-            question: "How does Tailwind CSS work?",
-            answer: "Tailwind CSS is a utility-first CSS framework that provides low-level utility classes to build custom designs directly in your markup.",
+            question: "Comment puis-je devenir conducteur sur Covoit’Ivoire ?",
+            answer: "Pour devenir conducteur, inscrivez-vous sur notre plateforme, remplissez les informations nécessaires sur votre véhicule, et soumettez vos trajets. Une fois que vous êtes approuvé, vous pouvez commencer à accepter des réservations de passagers.",
         },
         {
             id: 3,
-            question: "What is the purpose of Next.js?",
-            answer: "Next.js is a React framework that enables server-side rendering and generating static websites for React-based web applications.",
+            question: "Les trajets sont-ils sécurisés ?",
+            answer: "Oui, nous prenons la sécurité très au sérieux. Nous vérifions les profils des conducteurs et des passagers, et nous encourageons les utilisateurs à laisser des évaluations après chaque trajet pour garantir un environnement sûr et fiable.",
         },
         {
             id: 4,
-            question: "What is the purpose of Next.js?",
-            answer: "Next.js is a React framework that enables server-side rendering and generating static websites for React-based web applications.",
+            question: "Quels sont les moyens de paiement acceptés ?",
+            answer: "Nous acceptons divers moyens de paiement, y compris les cartes de crédit et les paiements en ligne sécurisés. Vous pouvez gérer vos options de paiement directement depuis votre compte utilisateur.",
         },
         {
             id: 5,
-            question: "What is the purpose of Next.js?",
-            answer: "Next.js is a React framework that enables server-side rendering and generating static websites for React-based web applications.",
+            question: "Comment puis-je annuler une réservation ?",
+            answer: "Si vous devez annuler une réservation, vous pouvez le faire depuis votre compte utilisateur avant le début du trajet. Veuillez noter que des frais d'annulation peuvent s'appliquer en fonction du moment où vous annulez.",
         },
         {
             id: 6,
-            question: "What is the purpose of Next.js?",
-            answer: "Next.js is a React framework that enables server-side rendering and generating static websites for React-based web applications.",
+            question: "Que faire en cas de problème pendant le trajet ?",
+            answer: "Si vous rencontrez un problème pendant le trajet, contactez immédiatement notre support client via l'application ou notre site web. Nous sommes disponibles pour vous aider à résoudre tout problème que vous pourriez rencontrer.",
         },
-        // Ajoutez plus de questions ici si nécessaire
     ];
-
 
     return (
         <>
@@ -56,10 +54,14 @@ export default async function Page() {
                     <div className="mx-auto max-w-2xl py-14">
                         <div className="text-center">
                             <h1 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">
-                                Vos questions sur covoit’ivoire
+                                Vos questions sur Covoit’Ivoire
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-200">
-                                Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat aliqua.
+                                Vous avez d&apos;autres questions et vous ne trouvez pas la réponse que vous cherchez ? Contactez notre équipe de support en{' '}
+                                <Link href="#" legacyBehavior>
+                                    <a className="font-semibold text-[#f7872e] hover:text-[#f7872e]">nous envoyant un email</a>
+                                </Link>{' '}
+                                et nous vous répondrons dans les plus brefs délais.
                             </p>
                         </div>
                     </div>
@@ -68,13 +70,13 @@ export default async function Page() {
 
             <div className="bg-white">
                 <div className="mx-auto max-w-7xl py-14 px-6 lg:px-8">
-                    <h2 className="text-2xl font-bold leading-10 tracking-tight text-gray-900">Frequently asked questions</h2>
+                    <h2 className="text-2xl font-bold leading-10 tracking-tight text-gray-900">Questions fréquemment posées</h2>
                     <p className="mt-6 max-w-2xl text-base leading-7 text-gray-600">
-                        Have a different question and can’t find the answer you’re looking for? Reach out to our support team by{' '}
+                        Vous avez une question différente et vous ne trouvez pas la réponse que vous cherchez ? Contactez notre équipe de support en{' '}
                         <Link href="#" legacyBehavior>
-                            <a className="font-semibold text-[#f7872e] hover:text-[#f7872e]">sending us an email</a>
+                            <a className="font-semibold text-[#f7872e] hover:text-[#f7872e]">nous envoyant un email</a>
                         </Link>{' '}
-                        and we’ll get back to you as soon as we can.
+                        et nous vous répondrons dès que possible.
                     </p>
                     <div className="mt-20">
                         <dl className="space-y-16 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-16 sm:space-y-0 lg:grid-cols-3 lg:gap-x-10">
@@ -89,5 +91,5 @@ export default async function Page() {
                 </div>
             </div>
         </>
-    )
+    );
 }

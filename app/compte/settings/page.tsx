@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import DesktopNavBarDriver from '../../components/includes/Driver/DesktopNavBarDriver';
-import MobileNavBarDriver from '../../components/includes/Driver/MobileNavBarDriver';
+import DesktopNavBar from '../../components/includes/DesktopNavBar';
+import MobileNavBar from '../../components/includes/MobileNavBar';
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import UserProfil from '../../components/includes/userProfil';
@@ -11,9 +11,9 @@ import { Tab, TabGroup, TabList } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 import { getSettings } from '@/app/services/Auth';
 import { User,Transaction } from '@/app/interfaces/GlobalType';
-import TransactionHistory from '@/app/components/TransactionHistory';
-import MonCompte from '@/app/components/MonCompte';
-import ListesVeicules from '@/app/components/ListesVeicules';
+import TransactionHistory from '@/app/components/history/TransactionHistory';
+import UsersCompte from '@/app/components/tabs/UsersCompte';
+import ListesVeicules from '@/app/components/tabs/ListesVeicules';
 
 const Alltransactions = [
     { id: '1', date: '2024-08-21', description: 'Recharge de portefeuille', amount: '10000', paymentMethod: 'Orange Money', status: 'Completed' },
@@ -87,7 +87,7 @@ export default function Page() {
                                             <UserProfil />
                                             <div className=" sm:flex flex-col gap-3 py-5 ">
                                                 <div className="basis-1/5 h-lvh">
-                                                    <DesktopNavBarDriver />
+                                                    <DesktopNavBar />
                                                 </div>
                                             </div>
                                         </div>
@@ -109,32 +109,12 @@ export default function Page() {
                                                             Informations
                                                         </Tab>
 
-                                                        <Tab className={({ selected }) => `w-full rounded-lg py-2.5 text-sm font-medium leading-5 ${selected ? 'bg-[#f7872e] text-white' : 'bg-white'}`}>
-                                                            Vehicules
-                                                        </Tab>
-
-                                                        <Tab className={({ selected }) => `w-full rounded-lg py-2.5 text-sm font-medium leading-5 ${selected ? 'bg-[#f7872e] text-white' : 'bg-white'}` }>
-                                                            Transactions
-                                                        </Tab>
-
                                                     </Tab.List>
 
                                                     <Tab.Panels className="mt-4">
 
                                                         <Tab.Panel className="rounded-xl bg-gray-100 p-3 ring-white/60 ring-offset-2 ring-offset-white focus:outline-none focus:ring-2">
-                                                        {data && <MonCompte users={data} />} {/* Passez un utilisateur unique */}
-                                                        </Tab.Panel>
-
-                                                        <Tab.Panel className="rounded-xl bg-gray-100 p-3 ring-white/60 ring-offset-2 ring-offset-white focus:outline-none focus:ring-2">
-                                                            
-                                                            <ListesVeicules dataveicules={vehicules} fetchUsers={fetchUsers} />
-
-                                                        </Tab.Panel>
-
-                                                        <Tab.Panel className="rounded-xl bg-gray-100 p-3 ring-white/60 ring-offset-2 ring-offset-white focus:outline-none focus:ring-2">
-
-                                                            <TransactionHistory transactions={Alltransactions} />
-
+                                                        {data && <UsersCompte users={data} />} {/* Passez un utilisateur unique */}
                                                         </Tab.Panel>
 
                                                     </Tab.Panels>
@@ -150,7 +130,7 @@ export default function Page() {
                         </div>
 
                         {/* Menu mobile */}
-                        <MobileNavBarDriver />
+                        <MobileNavBar />
                         {/* Menu mobile */}
                     </div>
                 </main>

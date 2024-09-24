@@ -1,11 +1,11 @@
 "use client";
 
 
-import React, { useState,useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
-import Preloader from './Preloader';
-import TrajetPreloader from './TrajetPreloader';
+import { formatDateTime } from '../../services/dateUtils';
+import TrajetPreloader from '../Preloader/TrajetPreloader';
 
 // Définir l'interface pour les transactions
 interface Transaction {
@@ -20,13 +20,13 @@ interface Transaction {
 // Fonction pour obtenir l'icône du moyen de rechargement
 const getPaymentMethodIcon = (method: string) => {
     switch (method) {
-        case 'Orange Money':
+        case 'Orange':
             return <Image src="/img/orange.png" alt="Orange Money" width={25} height={25} />;
         case 'Wave':
             return <Image src="/img/wave2.png" alt="Wave" width={25} height={25} />;
-        case 'MTN':
+        case 'Mtn':
             return <Image src="/img/mtn.jpeg" alt="MTN" width={25} height={25} />;
-        case 'Moov Money':
+        case 'Moov':
             return <Image src="/img/moov.png" alt="Moov Money" width={25} height={25} />;
         case 'Carte Visa':
             return <Image src="/img/visa.png" alt="Carte Visa" width={25} height={25} />;
@@ -78,11 +78,11 @@ useEffect(() => {
                         <div className="p-1 max-w-4xl mx-auto">
                             <h2 className="text-2sm font-semibold mb-4">Historique des Transactions</h2>
                             <div className="space-y-4">
-                                {transactions.map((transaction) => (
+                                {transactions && transactions.map((transaction) => (
                                     <div key={transaction.id} className="p-4 bg-white border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
 
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className="text-sm text-gray-700 font-semibold">{transaction.date}</span>
+                                            <span className="text-sm text-gray-700 font-semibold"> {formatDateTime( transaction.date)}</span>
                                             <span className="text-orange-600 font-semibold">{transaction.amount} FCFA</span>
                                         </div>
 

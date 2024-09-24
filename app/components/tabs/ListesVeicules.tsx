@@ -4,11 +4,11 @@ import React, { useState,useEffect } from 'react';
 import Image from 'next/image';
 import { Menu } from '@headlessui/react';
 import { Car, CarFront, Edit, EllipsisVertical,SaveAll, Trash, X } from 'lucide-react';
-import { User, Vehicule } from '../interfaces/GlobalType';
-import { DateHeur, DateTime, formatDateTime } from '../services/dateUtils';
-import Preloader from './Preloader';
-import AddVeicule from './Modal/AddVeicule';
-import TrajetPreloader from './TrajetPreloader';
+import { User, Vehicule } from '../../interfaces/GlobalType';
+import { DateHeur, DateTime, formatDateTime } from '../../services/dateUtils';
+// import Preloader from '../Preloader';
+import AddVeicule from '../Modal/AddVeicule';
+import TrajetPreloader from '../Preloader/TrajetPreloader';
 
 
 // Définir les props pour le composant
@@ -21,12 +21,19 @@ interface ListesVeiculesProps {
 const ListesVeicules: React.FC<ListesVeiculesProps> = ({ dataveicules,fetchUsers }) => {
 
     const [showDrawer, setShowDrawer] = useState<boolean>(false);
-
+    const [detail, setDetail] = useState<Vehicule>();
     const [loading, setLoading] = useState(true);
 
     const openDrawer = (id:String) => {
+        setDetail(undefined); // Utilise `undefined` au lieu de `""`
         setShowDrawer(true);
     };
+
+    const openDrawerEdit = (data:Vehicule) => {
+        setDetail(data);
+        setShowDrawer(true);
+    };
+
     const closeDrawer = () => {
         setShowDrawer(false);
     };
@@ -59,7 +66,7 @@ const ListesVeicules: React.FC<ListesVeiculesProps> = ({ dataveicules,fetchUsers
 
                 <div className="relative z-30" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
                     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"/>
-                    <AddVeicule fetchUsers={fetchUsers}  closeDrawer={closeDrawer}/>
+                    <AddVeicule fetchUsers={fetchUsers}  closeDrawer={closeDrawer} details= {detail} />
                 </div>
             )}
 
@@ -102,20 +109,20 @@ const ListesVeicules: React.FC<ListesVeiculesProps> = ({ dataveicules,fetchUsers
                                                             <div className="px-1 py-1">
                                                                 <Menu.Item>
                                                                     {({ active }) => (
-                                                                        <button className={`group flex w-full items-center rounded-md px-2 py-2 text-sm ${active ? 'bg-orange-500 text-white' : 'text-gray-900'}`}>
+                                                                        <button onClick={() => openDrawerEdit(vehicule)} className={`group flex w-full items-center rounded-md px-2 py-2 text-sm ${active ? 'bg-orange-500 text-white' : 'text-gray-900'}`}>
                                                                             <Edit name="Edit" className="mr-2 h-5 w-5 text-orange-400" aria-hidden="true" />
                                                                             Modifier
                                                                         </button>
                                                                     )}
                                                                 </Menu.Item>
-                                                                <Menu.Item>
+                                                                {/* <Menu.Item>
                                                                     {({ active }) => (
                                                                         <button className={`group flex w-full items-center rounded-md px-2 py-2 text-sm ${active ? 'bg-orange-500 text-white' : 'text-gray-900'}`}>
                                                                             <Trash name="Trash" className="mr-2 h-5 w-5 text-orange-400" aria-hidden="true" />
                                                                             Supprimer
                                                                         </button>
                                                                     )}
-                                                                </Menu.Item>
+                                                                </Menu.Item> */}
                                                             </div>
                                                         </Menu.Items>
                                                     </Menu>

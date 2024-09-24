@@ -44,6 +44,7 @@ export interface Commande {
     utilisateur: User;
     conducteur: User;
     reponsesConducteur: ReponseConducteur[];
+    
 }
 
 export interface Arret {
@@ -105,8 +106,9 @@ export interface User {
     reponsesConducteur: ReponseConducteur[];
     commandesConducteur: Commande[];
     vehicules: Vehicule[];
-}
+    rechargements: Rechargements[];
 
+}
 
 export interface Transaction {
     id: string;
@@ -116,3 +118,14 @@ export interface Transaction {
     paymentMethod: string;
     status: string;
 }
+
+export interface Rechargements {
+    id: string;
+    amount: string;
+    date: string;
+    description: string;
+    paymentMethod: string;
+    status: string;
+    utilisateurId: string;
+    walletId: string;
+    }

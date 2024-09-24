@@ -1,93 +1,100 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import CommandsNotFound from '@/app/components/error/CommandsNotFound';
+import Modal from '@/app/components/Modal/Modal';
+import { DetailCommandesResponse } from '@/app/interfaces/detailCommandes';
+import { sendStateCommande } from '@/app/services/CommandeService';
+import { getDriverCommandes } from '@/app/services/DriverServices';
+import { ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
-import { Box, Calendar, ChevronRight, Lock, Map, Users, X,GalleryVerticalEnd } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import DesktopNavBarDriver from '../../components/includes/Driver/DesktopNavBarDriver';
 import MobileNavBarDriver from '../../components/includes/Driver/MobileNavBarDriver';
-import { BaseResponse } from '../../interfaces/ApiResponse';
-import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 import UserProfil from '../../components/includes/userProfil';
-import { getDriverCommandes } from '@/app/services/DriverServices';
-import { Commande, DetailCommandesResponse } from '@/app/interfaces/detailCommandes';
-import { DateHeur, DateTime, formatDateTime } from '@/app/services/dateUtils';
-import CommandsNotFound from '@/app/components/CommandsNotFound';
-import Preloader from '@/app/components/Preloader';
-import TrajetPreloader from '@/app/components/TrajetPreloader';
-import { sendCommande } from '@/app/services/CommandeService';
-import Modal from '@/app/components/Modal/Modal';
+import CommandePreloader from '@/app/components/Preloader/CommandePreloader';
+import Pagination from '@/app/components/Pagination/Pagination';
+import { DateHeur, DateTime } from '@/app/services/dateUtils';
+
+const PAGE_SIZE =5; // Nombre de trajets par page
 
 export default function Page() {
-
     const router = useRouter();
     const [response, setResponse] = useState<DetailCommandesResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showDrawer, setShowDrawer] = useState(false);
 
+    const [actionMessage, setActionMessage] = useState("");
+    const [onDeleteMessage, setOnDeleteMessage] = useState("");
+    const [onCloseMessage, setOnCloseMessage] = useState("");
+    const [idCommande, setIdCommande] = useState("");
+    const [step, setStep] = useState(0);
+
+    const [currentPage, setCurrentPage] = useState<number>(1); // Page actuelle
+    const [pageSize, setPageSize] = useState<number>(PAGE_SIZE); // Taille de la page
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleDelete = (id: number, action: number) => {
-        setIsModalOpen(false); // Fermer le modal après l'action
+    const [isDisabled, setIsDisabled] = useState(false);
+
+    const handleDelete = async (id: string) => {
+        setIsDisabled(false);
+        const newStatus = "dismissed";
+        await sendStateCommande(id, newStatus);
+        setIsModalOpen(false);
+        fetchCommandes(); // Appel pour mettre à jour les données
     };
 
+    const handleValidate = async (id: string) => {
+        const newStatus = "validated";
+        await sendStateCommande(id, newStatus);
+        setIsModalOpen(false);
+        fetchCommandes(); // Appel pour mettre à jour les données
+    };
 
-    useEffect(() => {
-
-        const fetchCommandes = async () => {
-
-            try {
-
-                setLoading(true);
-                const res = await getDriverCommandes();
-                if (res.code === 200) {
-
-                    const adaptedResponse: DetailCommandesResponse = {
-                        commandes: res.data
-                    };
-                    setResponse(adaptedResponse);
-
-                    setTimeout(() => {
-                        setLoading(false);
-                    }, 1000);
-                }
-            } catch (err) {
-
-                setError('Error fetching user info');
-                console.error('Error fetching user info:', err);
-                setLoading(false);
-
-            }
-        };
-
-        fetchCommandes();
-    }, []);
-
-    // Assure-toi que la fonction est marquée comme async
-    const AccepterCommande = async (value: Commande): Promise<void> => {
-        const commandeId = value.id;
-        const conducteurId = value.conducteur_id;
-        const commentaires = 'Votre commande est désormais confirmée et nous vous remercions chaleureusement pour votre confiance ! Si jamais vous souhaitiez apporter des modifications ou annuler votre commande, n’hésitez pas à nous en faire part dès que possible. Nous sommes là pour vous accompagner !';
-        const statutReponse = 'validated';
-          // Crée une nouvelle date et formate en ISO 8601
-        const tempsReponse = new Date().toISOString();
-
-        console.log(tempsReponse);
-
+    const fetchCommandes = async () => {
         try {
-            const res = await sendCommande(commandeId, conducteurId, commentaires, statutReponse, tempsReponse);
-            console.log('Réponse de l\'API:', res);
-        } catch (error) {
-            console.error('Erreur lors de l\'acceptation de la commande:', error);
+            setLoading(true);
+            const res = await getDriverCommandes(currentPage, pageSize);
+            if (res.code === 200) {
+                const adaptedResponse: DetailCommandesResponse = {
+                    commandes: res.data,
+                    total: res.total
+                };
+                setResponse(adaptedResponse);
+                setLoading(false);
+            }
+        } catch (err) {
+            setError('Erreur lors de la récupération des commandes');
+            console.error('Erreur lors de la récupération des commandes:', err);
+            setLoading(false);
         }
     };
 
-    const RejeterCommande = (value: Commande) => {
+    useEffect(() => {
+        fetchCommandes();
+    }, [currentPage, pageSize]);
+
+    const AccepterCommande = async (value: string) => {
+        setIdCommande(value);
+        setStep(1);
         setIsModalOpen(true);
-        console.log(value);
+        setActionMessage("Êtes-vous sûr de vouloir accepter cette commande ?");
+        setOnDeleteMessage("OUI,ACCEPTER");
+        setOnCloseMessage("FERMER");
     };
-    
+
+    const RejeterCommande = (value: string) => {
+        setStep(2);
+        setIdCommande(value);
+        setActionMessage("Êtes-vous sûr de vouloir annuler cette commande ?");
+        setOnDeleteMessage("OUI,ANNULER");
+        setOnCloseMessage("FERMER");
+        setIsModalOpen(true);
+    };
+
+    const DEFAULT_IMAGE_URL = '/img/users.png';
 
     return (
         <>
@@ -109,6 +116,7 @@ export default function Page() {
                     <div className="mx-auto max-w-7xl px-2 pb-12 sm:px-6 lg:px-8">
                         <div className="rounded-lg bg-white p-2">
                             <div className="rounded-lg p-2 pb-14 sm:pb-0">
+
                                 <div className="py-2">
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-10 justify-between">
                                         <div className="hidden col-span-1 md:col-span-3 group md:block flex-shrink-0">
@@ -126,7 +134,7 @@ export default function Page() {
 
                                             {loading ? (
 
-                                                <TrajetPreloader />
+                                                <CommandePreloader />
 
                                                 ) : (
                                                     
@@ -136,17 +144,18 @@ export default function Page() {
                                                             response.commandes.map((commande, index) => (
 
                                                                 <div key={index} className="relative shadow-md border-none bg-white rounded-md border-2 p-3">
+                                                                    
                                                                     <div className="flex justify-between">
                                                                         <div className="text-base flex justify-items-center items-center">
                                                                             Commande reçu le {DateTime(commande.date_creation)}
                                                                         </div>
                                                                         <div>
                                                                             <div className="text-base">
-                                                                                Montant :
-                                                                                <span className="text-[#f7872e]">{commande.montant} FCFA</span>
+                                                                                Montant : <span className="text-[#f7872e]"> {commande.montant} FCFA</span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
+
                                                                     <div className="border-t-4 mt-4 pt-4 border-dashed"></div>
                                                                     <div className="flex flex-wrap">
                                                                         <div className="w-full sm:w-1/2 mt-2">
@@ -155,11 +164,16 @@ export default function Page() {
                                                                             </span>
                                                                             <div className="flex items-center mt-2">
                                                                                 <div className="relative">
-                                                                                    <Image className="inline-block h-12 w-12 rounded-full" src={commande.utilisateur.photo_url} alt="Passager"width={48} height={48}/>
+                                                                                    <Image className="inline-block h-12 w-12 rounded-full" src={commande?.utilisateur?.photo_url ? commande.utilisateur.photo_url : DEFAULT_IMAGE_URL} alt="Passager" width={40} height={40}/>
                                                                                 </div>
                                                                                 <div className="ml-3">
-                                                                                    <p className="text-base md:text-xl font-medium text-black flex">
+                                                                                    <p className="text-base md:text-sm font-medium text-black flex">
                                                                                         {commande.utilisateur.username}
+                                                                                            {commande.statut_commande === 'validated' && (
+                                                                                                <span className="ml-2 bg-red-500 text-white py-1 px-2 rounded">
+                                                                                                    {commande.utilisateur.contact_number}
+                                                                                                </span>
+                                                                                            )}
                                                                                     </p>
                                                                                     <p className="text-xs md:text-sm font-medium text-black">{commande.utilisateur.role}</p>
                                                                                 </div>
@@ -204,45 +218,42 @@ export default function Page() {
                                                                     <div className="flex justify-end gap-2 mt-2">
 
                                                                         {commande.statut_commande === 'pending' ? (
-                                                                            <button
-                                                                                onClick={() => AccepterCommande(commande)}
-                                                                                type="button"
+                                                                            <button onClick={() => AccepterCommande(commande.id)} type="button"
                                                                                 className="bg-green-600 text-slate-100 px-3 rounded py-1 text-xs md:text-base">
-                                                                                    Valider
+                                                                                Valider ❎
                                                                             </button>
-
                                                                         ) : commande.statut_commande === 'validated' ? (
-
                                                                             <span className="bg-black text-white text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-black border border-white">
                                                                                 <svg className="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                                                    <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
+                                                                                    <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
                                                                                 </svg>
                                                                                 Accepter 👍
                                                                             </span>
+                                                                        ) : commande.statut_commande === 'dismissed' ? (
+
+                                                                            <span className="bg-[#f7872e] text-white text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-black border border-white">
+                                                                                <svg className="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                                                    <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                                                                                </svg>
+                                                                                <span className="text-white text-sm me-1.5">Commande annuler </span>
                                                                                 
-                                                                            ) : (
-                                                                                <p>Status non pris en charge</p>
-                                                                            )}
+                                                                            </span>
+
+                                                                        ) : (
+                                                                            <p>Status inconnu</p>
+                                                                        )}
 
 
-                                                                        {(commande.statut_commande === 'start' ||
+
+                                                                        {(commande.statut_commande === 'started' ||
                                                                             commande.statut_commande === 'pending' ||
                                                                             commande.statut_commande === 'validated') && (
                                                                                 
-                                                                                <button onClick={() => RejeterCommande(commande)} type="button"
-                                                                                    className="bg-red-600 text-slate-100 px-3 rounded py-1 text-xs md:text-base" >
+                                                                                <button onClick={() => RejeterCommande(commande.id)} type="button"
+                                                                                    className="bg-red-600 text-slate-100 px-3 rounded py-0 text-sm md:text-base" >
                                                                                     Rejeter 👎
                                                                                 </button>
                                                                             )}
-
-                                                                        {/* {commande.statut_commande === 'Dismiss' && (
-                                                                                <span className="bg-red-600 text-white text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-black border border-white">
-                                                                                <svg className="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                                                    <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
-                                                                                </svg>
-                                                                                👎
-                                                                            </span>
-                                                                        )} */}
 
                                                                     </div>
                                                                 </div>
@@ -254,6 +265,16 @@ export default function Page() {
                                                             <CommandsNotFound/>
                                                         )}
 
+                                                            {response &&  response?.commandes.length > 0 ? (
+                                                                <Pagination
+                                                                    currentPage={currentPage}
+                                                                    pageSize={pageSize}
+                                                                    total={response.total || 0}
+                                                                    onPageChange={setCurrentPage}
+                                                                    onPageSizeChange={setPageSize}
+                                                                />
+                                                            ) : null}
+
                                                     </div>
                                                 )}
 
@@ -264,10 +285,12 @@ export default function Page() {
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
-                        {/* Drawer component */}
+
                         {showDrawer && (
+
                             <div className="relative z-30" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
                                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
                                 <div className="fixed inset-0 overflow-hidden">
@@ -298,24 +321,23 @@ export default function Page() {
                                     </div>
                                 </div>
                             </div>
+
                         )}
-                        {/* Mobile menu */}
+
                         <MobileNavBarDriver />
+
                     </div>
                 </main>
 
             </div>
 
-
             <Modal
                 buttonColor="bg-red-600"
-                actionMessage="Êtes-vous sûr de vouloir annuler cette commande ?"
-                onDeleteMessage="OUI,VALIDER"
-                onCloseMessage="NON"
-                id={1} // L'ID de l'élément à supprimer
-                actions={1} // L'action à exécuter
-                states="delete"
-                onDelete={handleDelete}
+                actionMessage={actionMessage}
+                onDeleteMessage={onDeleteMessage}
+                onCloseMessage={onCloseMessage}
+                id={idCommande}
+                onDelete={step === 1 ? () => handleValidate(idCommande) : () => handleDelete(idCommande)}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
             />

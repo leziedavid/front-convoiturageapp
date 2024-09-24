@@ -43,37 +43,30 @@ export default function Page() {
     });
 
     const onSubmit = async (data: LoginFormValues) => {
-
         try {
             const apiResponse = await signIn(data.email, data.password);
-
-            if(apiResponse.code==200){
-
-                toast.success('Successfully toasted!')
+    
+            if (apiResponse.code === 200) {
+                toast.success('Successfully logged in!');
                 localStorage.setItem('token', apiResponse.data.token);
-                console.log(apiResponse.data.user.role);
-                if(apiResponse.data.user.role==="DRIVER"){
-                    router.push('/conducteur');
-                }else if(apiResponse.data.user.role==="USER"){
-                    router.push('/compte');
-                }
-            
+                document.cookie = `token=${apiResponse.data.token}; path=/`; // Stocke le token dans les cookies
+                const role = apiResponse.data.user.role;
+                document.cookie = `Graphe=${role === "DRIVER" ? "2" : role === "USER" ? "1" : "3"}; path=/`; // Stocke le graphe
+    
+                // Redirige en fonction du rôle
+                router.push(role === "DRIVER" ? '/conducteur' : role === "USER" ? '/compte' : '/admin/dashboard');
                 reset();
-
-            }else if(apiResponse.code==400){
-
-                toast.error(apiResponse.messages!)
-
-            }else if(apiResponse.code==500){
-
-                toast.error(" Un compte existe dêja avec se email")
+            } else if (apiResponse.code === 400) {
+                toast.error(apiResponse.messages!);
+            } else if (apiResponse.code === 500) {
+                toast.error("Un compte existe déjà avec cet email");
             }
-
         } catch (error) {
-            console.error(' Une erreur est survenue lors de la connexion', error);
-            toast.error(" Une erreur est survenue lors de la connexion");
+            console.error('Une erreur est survenue lors de la connexion', error);
+            toast.error("Une erreur est survenue lors de la connexion");
         }
     };
+    
 
     return (
 
@@ -102,8 +95,7 @@ export default function Page() {
                                             {...register('email')}
                                             type="text"
                                             autoComplete="email"
-                                            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
-                                        />
+                                            className="block w-full rounded-md border border-gray-300 py-3 px-4 text-gray-900 shadow-sm outline-none focus:border-orange-600 focus:ring-black"                                        />
                                         {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                                     </div>
                                 </div>
@@ -116,8 +108,7 @@ export default function Page() {
                                             {...register('password')}
                                             type={showPassword ? 'text' : 'password'}
                                             autoComplete="current-password"
-                                            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
-                                        />
+                                            className="block w-full rounded-md border border-gray-300 py-3 px-4 text-gray-900 shadow-sm outline-none focus:border-orange-600 focus:ring-black"                                        />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
@@ -158,7 +149,7 @@ export default function Page() {
                                     </div>
 
                                     <div className="text-sm">
-                                        <Link href="#" className="font-medium text-black hover:text-black">
+                                        <Link href="/password" className="font-medium text-black hover:text-black">
                                             Mot de passe oublié ?
                                         </Link>
                                     </div>

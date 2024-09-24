@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../globals.css';
 import Header from '../components/includes/header';
+import HeaderClient from '../components/includes/header-client';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,7 +21,7 @@ const ConducteurLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
+        <HeaderClient />
         <main>{children}</main>
       </body>
     </html>

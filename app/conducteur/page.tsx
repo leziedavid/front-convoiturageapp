@@ -1,20 +1,23 @@
 // app/conducteur/page.tsx
 
 "use client";
-import React, { useEffect, useState } from 'react';
+import { History, Map, Users } from 'lucide-react';
 import Image from 'next/image';
-import { Box } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import PaymentModal from '../components/Modal/PaymentModal';
+import TrajetPreloader from '../components/Preloader/TrajetPreloader';
 import DesktopNavBarDriver from '../components/includes/Driver/DesktopNavBarDriver';
 import MobileNavBarDriver from '../components/includes/Driver/MobileNavBarDriver';
-import { BaseResponse } from '../interfaces/ApiResponse';
-import toast, { Toaster } from 'react-hot-toast';
-import { useRouter } from 'next/navigation'
-import { Lock, Map, Users } from 'lucide-react';
 import UserProfil from '../components/includes/userProfil';
+import { BaseResponse } from '../interfaces/ApiResponse';
 import { getUserStatistics } from '../services/UserServices';
 import { formatDateTime } from '../services/dateUtils';
-import TrajetPreloader from '../components/TrajetPreloader';
 import { launchPayment, requestToGetTransactionStatus } from '../services/paymentService';
+import TrajetNotFound from '../components/error/TrajetNotFound';
+import DataNotFound from '../components/error/DataNotFound';
+import { DateHeur, DateTime } from '@/app/services/dateUtils';
 
 export default function Page() {
 
@@ -58,7 +61,9 @@ export default function Page() {
 
         if (!waveId) return;
         setLoading(true);
+
         try {
+
             const  paymentstatus  = await requestToGetTransactionStatus(waveId);
             setStatus(paymentstatus.data);
 
@@ -83,30 +88,29 @@ export default function Page() {
         } finally {
             setLoading(false);
         }
+
+    };
+
+
+    const fetchStatistics = async () => {
+
+        try {
+            setLoading(true);
+            const res = await getUserStatistics();
+            if (res.code === 200) {
+                setData(res.data);
+            } else {
+                setError('Error fetching user info');
+            }
+        } catch (err) {
+            setError('Error fetching user info');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-
-        const fetchStatistics = async () => {
-
-            try {
-                setLoading(true);
-                const res = await getUserStatistics();
-                if (res.code === 200) {
-                    setData(res.data);
-                } else {
-                    setError('Error fetching user info');
-                }
-            } catch (err) {
-                setError('Error fetching user info');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchStatistics();
-
-        // If `waveId` is set, check payment status
         if (waveId) {
             checkPaymentStatus();
         }
@@ -121,16 +125,15 @@ export default function Page() {
 
             <div className="min-h-full">
 
-                
-                        <div className="bg-[#f7872e] pb-32">
+                    <div className="bg-[#f7872e] pb-32">
                             <header className="py-8">
                                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                                     <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white text-center">Hello 👋🏾</h1>
                                 </div>
                             </header>
-                        </div>
+                    </div>
 
-                        <main className="-mt-32">
+                    <main className="-mt-32">
                             <div className="mx-auto max-w-7xl px-2 pb-12 sm:px-6 lg:px-8">
                                 
                                 <div className="rounded-lg bg-white p-2">
@@ -142,8 +145,8 @@ export default function Page() {
                                                     <UserProfil/>
 
                                                     <button onClick={handlePayment} disabled={loading}>
-                {loading ? 'Processing...' : 'Pay Now'}
-            </button>
+                                                        {loading ? 'Processing...' : 'Pay Now'}
+                                                    </button>
                                                     <div className="hidden md:flex flex-col gap-3 py-5">
                                                         <div className="basis-1/5 h-lvh">
                                                             <DesktopNavBarDriver />
@@ -152,15 +155,19 @@ export default function Page() {
                                                 </div>
 
                                                 <div className="col-span-1 md:col-span-9 sm:mt-0">
-
-                                                    <div className="mx-auto max-w-7xl">
-                                                        <div className="flex justify-between">
-                                                            <div>
-                                                                <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Mon compte</h1>
-                                                                <p className="mt-2 text-sm text-gray-500">Informations personnelles.</p>
-                                                            </div>
+                                                    
+                                                <div className="mx-auto max-w-7xl">
+                                                    <div className="flex justify-between">
+                                                        <div className="">
+                                                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Mon compte
+                                                            </h1>
+                                                            <p className="mt-2 text-sm text-gray-500">Personal details and application.</p>
+                                                        </div>
+                                                        <div>
+                                                            <PaymentModal wallet={data?.userDetail.wallet.balance} fetchStatistics={fetchStatistics}/>
                                                         </div>
                                                     </div>
+                                                </div>
 
                                                 {loading ? (
 
@@ -171,13 +178,13 @@ export default function Page() {
                                                     <>
                                                     
                                                     <div className="mx-auto max-w-7xl grid grid-cols-3 gap-2 py-3">
-                                                        <div className="bg-stone-800 text-white p-2 md:p-3 rounded shadow">
+                                                        <div className="bg-gray-100 text-black p-2 md:p-3 rounded shadow">
                                                             <span className="text-sm md:text-base">Total de course</span>
                                                             <div className="text-sm md:text-xl text-end">
                                                             {data?.totalCourses !== undefined && data.totalCourses > 0 ? `${data.totalCourses}`: '0'}
                                                             </div>
                                                         </div>
-                                                        <div className="bg-stone-800 text-white p-2 md:p-3 rounded shadow">
+                                                        <div className="bg-gray-100 text-black p-2 md:p-3 rounded shadow">
                                                             <span className="text-sm md:text-base">Nb de vehicule</span>
 
                                                             <div className="text-sm md:text-xl text-end">
@@ -185,7 +192,7 @@ export default function Page() {
                                                             </div>
 
                                                         </div>
-                                                        <div className="bg-stone-800 text-white p-2 md:p-3 rounded shadow">
+                                                        <div className="bg-gray-100 text-black p-2 md:p-3 rounded shadow">
                                                             <span className="text-sm md:text-base">Montant course</span>
                                                             <div className="text-sm md:text-xl text-end">
                                                             {data?.totalAmount !== undefined && data.totalAmount > 0 ? `${data.totalAmount}`: '0'}
@@ -254,26 +261,33 @@ export default function Page() {
                                                                 </div>
 
                                                             ) : (
-                                                                <div className="px-4 py-4 text-lg text-gray-500 dark:text-gray-300 whitespace-nowrap items-center text-center">
-                                                                        Aucun projet trouvé
-                                                                    </div>
+                                                                <TrajetNotFound/>
                                                             )}
+
 
                                                         </div>
 
                                                         <div className="flex flex-col gap-4">
                                                             <div className="bg-gray-100 p-4 rounded-lg shadow">
-                                                                <div>
-                                                                    <h1 className="text-base tracking-tight text-gray-900 sm:text-xl flex items-center">
-                                                                        <Box className="mr-2" /> Détail de mon abonnement
-                                                                    </h1>
-                                                                    <p className="text-gray-700">
-                                                                        Abonnement en cours : Premium
+
+                                                            {data && data.userDetail.rechargements ? (
+
+                                                                <div className="border-2 border-gray-200 p-2 rounded-lg">
+                                                                    <p className="flex items-center text-gray-700 text-sm">
+                                                                        <History name="History" className="mr-2" />
+                                                                        Recargement par {data.userDetail.rechargements.paymentMethod}
                                                                     </p>
-                                                                    <p className="text-gray-700">
-                                                                        Date d&apos;expiration : 08h00 18/08/2024
+
+                                                                    <p className="text-gray-700 text-sm">
+                                                                        Date : { DateTime(data.userDetail.rechargements.date)} à { DateHeur(data.userDetail.rechargements.date)}
                                                                     </p>
                                                                 </div>
+
+                                                            ) : (
+                                                                <div className="px-4 py-4 text-lg text-gray-500 dark:text-gray-300 whitespace-nowrap items-center text-center">
+                                                                    <DataNotFound />
+                                                                </div>
+                                                                )}
                                                             </div>
                                                         </div>
 
@@ -293,8 +307,7 @@ export default function Page() {
 
                                 <MobileNavBarDriver />
                             </div>
-                        </main>
-
+                    </main>
 
             </div>
 

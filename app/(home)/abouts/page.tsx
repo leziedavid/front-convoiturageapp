@@ -1,10 +1,8 @@
-// pages/trajet.js
+// pages/a-propos.js
 import React from 'react';
 import Image from 'next/image';
 
 export default async function page() {
-
-
     return (
         <div className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
             <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -41,14 +39,14 @@ export default async function page() {
                 <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
                     <div className="lg:pr-4">
                         <div className="lg:max-w-lg">
-                            <p className="text-base font-semibold leading-7 text-[#f7872e]">
-                                Deploy faster
+                            <p className="text-3xl font-semibold leading-7 text-[#f7872e]">
+                                Notre Mission
                             </p>
-                            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                                A better workflow
+                            <h1 className="mt-2 text-xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                                Révolutionner le covoiturage en Côte d&apos;Ivoire
                             </h1>
                             <p className="mt-6 text-xl leading-8 text-gray-700">
-                                Aliquet nec orci mattis amet quisque ullamcorper neque, nibh sem. At arcu, sit dui mi, nibh dui, diam eget aliquam. Quisque id at vitae feugiat egestas.
+                                Chez Covoit’Ivoire, notre mission est de rendre le covoiturage en Côte d&apos;Ivoire simple, accessible et fiable. Nous nous engageons à offrir des solutions de transport partagées qui sont non seulement économiques mais aussi respectueuses de l&apos;environnement.
                             </p>
                         </div>
                     </div>
@@ -57,7 +55,7 @@ export default async function page() {
                     <Image
                         className="w-[48rem] max-w-none rounded-xl bg-gray-900 shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem]"
                         src="/img/min.png"
-                        alt="Illustration"
+                        alt="Illustration de covoiturage"
                         width={768}
                         height={432}
                     />
@@ -66,7 +64,7 @@ export default async function page() {
                     <div className="lg:pr-4">
                         <div className="max-w-xl text-base leading-7 text-gray-700 lg:max-w-lg">
                             <p>
-                                Faucibus commodo massa rhoncus, volutpat. Dignissim sed eget risus enim. Mattis mauris semper sed amet vitae sed turpis id. Id dolor praesent donec est. Odio penatibus risus viverra tellus varius sit neque erat velit. Faucibus commodo massa rhoncus, volutpat. Dignissim sed eget risus enim. Mattis mauris semper sed amet vitae sed turpis id.
+                                Covoit’Ivoire a été fondé pour répondre à un besoin croissant de solutions de transport durables en Côte d&apos;Ivoire. Nous croyons en un avenir où les trajets sont partagés de manière fluide et sécurisée, réduisant ainsi les coûts de transport et l&apos;empreinte carbone.
                             </p>
                             <ul role="list" className="mt-8 space-y-8 text-gray-600">
                                 <li className="flex gap-x-3">
@@ -83,7 +81,7 @@ export default async function page() {
                                         />
                                     </svg>
                                     <span>
-                                        <strong className="font-semibold text-gray-900">Push to deploy.</strong> Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.
+                                        <strong className="font-semibold text-gray-900">Simplicité d&apos;utilisation.</strong> Notre plateforme est conçue pour être intuitive et facile à utiliser pour tous les utilisateurs.
                                     </span>
                                 </li>
                                 <li className="flex gap-x-3">
@@ -100,7 +98,7 @@ export default async function page() {
                                         />
                                     </svg>
                                     <span>
-                                        <strong className="font-semibold text-gray-900">SSL certificates.</strong> Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.
+                                        <strong className="font-semibold text-gray-900">Sécurité avant tout.</strong> Nous mettons en place des mesures strictes pour garantir la sécurité et le confort de nos utilisateurs.
                                     </span>
                                 </li>
                                 <li className="flex gap-x-3">
@@ -118,23 +116,23 @@ export default async function page() {
                                         />
                                     </svg>
                                     <span>
-                                        <strong className="font-semibold text-gray-900">Database backups.</strong> Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi lobortis.
+                                        <strong className="font-semibold text-gray-900">Flexibilité.</strong> Choisissez le trajet qui vous convient parmi une variété d&apos;options adaptées à vos besoins.
                                     </span>
                                 </li>
                             </ul>
                             <p className="mt-8">
-                                Et vitae blandit facilisi magna lacus commodo. Vitae sapien duis odio id et. Id blandit molestie auctor fermentum dignissim. Lacus diam tincidunt ac cursus in vel. Mauris varius vulputate et ultrices hac adipiscing egestas. Iaculis convallis ac tempor et ut. Ac lorem vel integer orci.
+                                Nous sommes passionnés par l&apos;amélioration des solutions de mobilité en Côte d&apos;Ivoire et nous nous engageons à créer une expérience de covoiturage qui allie innovation, accessibilité et responsabilité.
                             </p>
                             <h2 className="mt-16 text-2xl font-bold tracking-tight text-gray-900">
-                                No server? No problem.
+                                Rejoignez-nous dans cette aventure !
                             </h2>
                             <p className="mt-6">
-                                Id orci tellus laoreet id ac. Dolor, aenean leo, ac etiam consequat in. Convallis arcu ipsum urna nibh. Pharetra, euismod vitae interdum mauris enim, consequat vulputate nibh. Maecenas pellentesque id sed tellus mauris, ultrices mauris. Tincidunt enim cursus ridiculus mi. Pellentesque nam sed nullam sed diam turpis ipsum eu a sed convallis diam.
+                                Que vous soyez un conducteur ou un passager, nous vous invitons à faire partie de notre communauté. Ensemble, faisons de chaque trajet un moment de partage et de convivialité.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
