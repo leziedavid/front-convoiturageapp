@@ -17,7 +17,14 @@ const SectionZero: React.FC = () => {
             <div className="relative">
                 
                 <div className="brightness-50 h-[40rem] w-full object-cover">
-                    <Image src="/img/2149104441.jpg" alt="Background" layout="fill" objectFit="cover" priority />
+
+                    <Image
+                        src="/img/directions.jpg"
+                        alt="Background"
+                        fill
+                        style={{ objectFit: 'cover' }} // Appliquez objectFit via le style
+                        priority
+                    />
                 </div>
 
                 <div className="absolute inset-0 z-10 lg:w-full lg:px-40">

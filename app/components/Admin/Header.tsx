@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Bell as BellIcon, User as UserIcon, Menu as MenuIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -18,8 +18,22 @@ const Header: React.FC<{ setSidebarOpen: React.Dispatch<React.SetStateAction<boo
     const handleSignOut = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('Graphe');
+        document.cookie = 'token=; Max-Age=0; path=/';
+        document.cookie = 'Graphe=; Max-Age=0; path=/';
         router.push('/');
     };
+
+    const checkToken = useCallback(() => {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+        if (!token) {
+            router.push('/');
+            return;
+        }
+    }, [router]);
+
+    useEffect(() => {
+        checkToken();
+    }, [checkToken]);
 
     
     return (

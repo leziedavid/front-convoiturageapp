@@ -15,12 +15,6 @@ const nextConfig = {
                 hostname: 'another-example.com',
             },
             {
-                protocol: 'https',
-                hostname: 'images.unsplash.com',
-                pathname: '/photo-**',
-            },
-            // Ajoutez ce motif pour autoriser les images depuis localhost
-            {
                 protocol: 'http',
                 hostname: 'localhost',
                 pathname: '/uploads/**',

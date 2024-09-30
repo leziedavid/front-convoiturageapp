@@ -8,7 +8,7 @@ import { getDriverCommandes } from '@/app/services/DriverServices';
 import { ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import DesktopNavBarDriver from '../../components/includes/Driver/DesktopNavBarDriver';
 import MobileNavBarDriver from '../../components/includes/Driver/MobileNavBarDriver';
@@ -53,7 +53,7 @@ export default function Page() {
         fetchCommandes(); // Appel pour mettre à jour les données
     };
 
-    const fetchCommandes = async () => {
+    const fetchCommandes = useCallback(async () => {
         try {
             setLoading(true);
             const res = await getDriverCommandes(currentPage, pageSize);
@@ -63,18 +63,20 @@ export default function Page() {
                     total: res.total
                 };
                 setResponse(adaptedResponse);
-                setLoading(false);
             }
         } catch (err) {
             setError('Erreur lors de la récupération des commandes');
             console.error('Erreur lors de la récupération des commandes:', err);
+        } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        fetchCommandes();
     }, [currentPage, pageSize]);
+    
+    useEffect(() => {
+        
+        fetchCommandes();
+
+    }, [fetchCommandes]);
 
     const AccepterCommande = async (value: string) => {
         setIdCommande(value);

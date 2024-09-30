@@ -9,9 +9,9 @@ export default function page() {
         <>
             <SectionZero/>
             <SectionTwo/>
-            <SectionFive/>
-            {/* <SectionFour/> */}
-            {/* <SectionSix/> */}
+            {/* <SectionFive/> */}
+            <SectionFour/>
+            <SectionSix/>
         </>
 
     )

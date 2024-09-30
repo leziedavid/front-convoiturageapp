@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import DesktopNavBarDriver from '../../components/includes/Driver/DesktopNavBarDriver';
 import MobileNavBarDriver from '../../components/includes/Driver/MobileNavBarDriver';
@@ -8,9 +8,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import UserProfil from '../../components/includes/userProfil';
 import { Tab, TabGroup, TabList } from '@headlessui/react';
-import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 import { getSettings } from '@/app/services/Auth';
-import { User,Transaction } from '@/app/interfaces/GlobalType';
+import { User, Transaction } from '@/app/interfaces/GlobalType';
 import TransactionHistory from '@/app/components/history/TransactionHistory';
 import MonCompte from '@/app/components/tabs/MonCompte';
 import ListesVeicules from '@/app/components/tabs/ListesVeicules';
@@ -21,11 +20,9 @@ const Alltransactions = [
     { id: '3', date: '2024-08-20', description: 'Recharge de portefeuille', amount: '20000', paymentMethod: 'Wave', status: 'Pending' },
     { id: '4', date: '2024-08-20', description: 'Recharge de portefeuille', amount: '30000', paymentMethod: 'Moov Money', status: 'Pending' },
     { id: '5', date: '2024-08-19', description: 'Recharge de portefeuille', amount: '80000', paymentMethod: 'Carte Visa', status: 'Failed' },
-    // Ajoutez plus de transactions ici
 ];
 
 export default function Page() {
-
     const [showDrawer, setShowDrawer] = useState<boolean>(false);
     const router = useRouter();
     const [selectedPlan, setSelectedPlan] = useState(null);
@@ -35,24 +32,22 @@ export default function Page() {
     const [error, setError] = useState<string | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const res = await getSettings();
             if (res.code === 200) {
-                setData(res.data)
-                console.log(data?.rechargements);
+                setData(res.data);
+                console.log(res.data?.rechargements);
             }
         } catch (err) {
             setError('Error fetching user info');
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [fetchUsers]);
 
-    // Définir une image de remplacement si photo_url est undefined ou null
-    const photoUrl = data?.photo_url ?? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
     const vehicules = data?.vehicules || [];
     const recharge = data?.rechargements || [];
 

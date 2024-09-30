@@ -28,7 +28,7 @@ const UserProfil: React.FC = () => {
     }, []);
 
     // Définir une image de remplacement si photo_url est undefined ou null
-    const photoUrl = data?.photo_url ?? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
+    const photoUrl = data?.photo_url ?? '/img/image.png';
 
     return (
 
@@ -36,7 +36,14 @@ const UserProfil: React.FC = () => {
 
             <div className="relative">
                 
-            <Image className="inline-block h-20 w-20 border rounded-full" src={photoUrl} alt="Profile" width={80}height={80}layout="fixed" />
+                <Image
+                    className="inline-block h-20 w-20 border rounded-full"
+                    src={photoUrl}
+                    alt="Profile"
+                    width={80}
+                    height={80}
+                    priority // Optionnel, si tu veux que cette image soit chargée en priorité
+                />
 
             <Check name="Check" className="w-4 h-4  absolute right-0 bottom-0 text-white bg-orange-600 rounded-full" />
             </div>

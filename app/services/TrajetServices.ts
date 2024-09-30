@@ -1,6 +1,7 @@
 import { BaseResponse } from "../interfaces/ApiResponse";
 import jwt from 'jsonwebtoken';
 import { getBaseUrl} from "./baseUrl";
+import toast from "react-hot-toast";
 
 interface DecodedToken {
     id: string;
@@ -127,5 +128,36 @@ export const SearchTrajet = async (data: { point_depart: any, point_arrivee: any
 
     } catch (error: any) {
         throw new Error(error.message || 'Erreur réseau');
+    }
+};
+
+
+export const updateStatusTrajet = async (
+    trajetId: string,
+    newStatus: string,
+
+): Promise<BaseResponse<any>> => {
+    try {
+        const response = await fetch(`${getBaseUrl()}/updateStatusTrajet/${trajetId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                newStatus: newStatus,
+            }),
+        });
+
+        if (!response.ok) {
+            // Gestion des erreurs HTTP
+            const errorText = await response.text();
+            throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
+        } else {
+            toast.success('trajet mise à jour avec succès');
+        }
+
+        // Retourner la réponse JSON
+        return await response.json();
+    } catch (error) {
+
+        throw error;
     }
 };

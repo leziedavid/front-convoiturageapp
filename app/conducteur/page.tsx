@@ -1,10 +1,8 @@
-// app/conducteur/page.tsx
-
 "use client";
 import { History, Map, Users } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import PaymentModal from '../components/Modal/PaymentModal';
 import TrajetPreloader from '../components/Preloader/TrajetPreloader';
@@ -20,8 +18,6 @@ import DataNotFound from '../components/error/DataNotFound';
 import { DateHeur, DateTime } from '@/app/services/dateUtils';
 
 export default function Page() {
-
-
     const router = useRouter();
 
     const [response, setResponse] = useState<BaseResponse<Statistics> | null>(null);
@@ -33,21 +29,23 @@ export default function Page() {
     const [status, setStatus] = useState<string | null>(null);
     const [paymentUrl, setPaymentUrl] = useState<URL | null>(null);
 
+    // État pour contrôler l'ouverture de la fenêtre de paiement
+    const [openPaymentWindow, setOpenPaymentWindow] = useState<string | null>(null);
 
     const handlePayment = async () => {
         setLoading(true);
         try {
             const amount = 1000; // Example amount
             const response = await launchPayment(amount);
-            const { wave_id, wavelaunchurl } =response.data;
+            const { wave_id, wavelaunchurl } = response.data;
 
             setWaveId(wave_id);
             setPaymentUrl(wavelaunchurl);
-            
             console.log(wavelaunchurl);
-            // Open the payment link in a new tab
-            if(wavelaunchurl){
-                window.open(wavelaunchurl, '_blank');
+            
+            // Préparer l'ouverture de la fenêtre de paiement
+            if (wavelaunchurl) {
+                setOpenPaymentWindow(wavelaunchurl);
             }
 
         } catch (error) {
@@ -57,43 +55,14 @@ export default function Page() {
         }
     };
 
-    const checkPaymentStatus = async () => {
-
-        if (!waveId) return;
-        setLoading(true);
-
-        try {
-
-            const  paymentstatus  = await requestToGetTransactionStatus(waveId);
-            setStatus(paymentstatus.data);
-
-            // Handle payment status
-            if (paymentstatus.data.payment_status === 'succeeded') {
-                
-                toast.success('Payment succeeded');
-
-                // Add any additional logic for successful payment
-            } else if (paymentstatus.data.payment_status === 'cancelled') {
-
-                toast.error('Payment cancelled');
-                // Add any additional logic for cancelled payment
-
-            } else if (paymentstatus.data.payment_status === 'processing') {
-
-                toast.success('Payment is processing');
-                // Add any additional logic for processing payment
-            }
-        } catch (error) {
-            console.error('Failed to check payment status:', error);
-        } finally {
-            setLoading(false);
+    // Ouvrir la fenêtre de paiement seulement après que l'URL a été définie
+    useEffect(() => {
+        if (openPaymentWindow) {
+            window.open(openPaymentWindow, '_blank');
         }
-
-    };
-
+    }, [openPaymentWindow]);
 
     const fetchStatistics = async () => {
-
         try {
             setLoading(true);
             const res = await getUserStatistics();
@@ -109,12 +78,35 @@ export default function Page() {
         }
     };
 
+    const checkPaymentStatus = useCallback(async () => {
+        if (!waveId) return;
+        setLoading(true);
+    
+        try {
+            const paymentstatus = await requestToGetTransactionStatus(waveId);
+            setStatus(paymentstatus.data);
+    
+            // Gérer le statut du paiement
+            if (paymentstatus.data.payment_status === 'succeeded') {
+                toast.success('Payment succeeded');
+            } else if (paymentstatus.data.payment_status === 'cancelled') {
+                toast.error('Payment cancelled');
+            } else if (paymentstatus.data.payment_status === 'processing') {
+                toast.success('Payment is processing');
+            }
+        } catch (error) {
+            console.error('Failed to check payment status:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [waveId]);
+    
     useEffect(() => {
         fetchStatistics();
         if (waveId) {
             checkPaymentStatus();
         }
-    }, [waveId]);
+    }, [waveId, checkPaymentStatus]);
 
 
     return (
@@ -144,9 +136,9 @@ export default function Page() {
                                                 <div className="col-span-1 md:col-span-3 group md:block flex-shrink-0">
                                                     <UserProfil/>
 
-                                                    <button onClick={handlePayment} disabled={loading}>
+                                                    {/* <button onClick={handlePayment} disabled={loading}>
                                                         {loading ? 'Processing...' : 'Pay Now'}
-                                                    </button>
+                                                    </button> */}
                                                     <div className="hidden md:flex flex-col gap-3 py-5">
                                                         <div className="basis-1/5 h-lvh">
                                                             <DesktopNavBarDriver />
@@ -221,42 +213,12 @@ export default function Page() {
                                                                             <div className="text-gray-500"> Abidjan - Agboville
                                                                             </div>
                                                                         </div>
-
+                                                                        {/* 
                                                                         <div className="mt-2">
                                                                             <div className="flex">
                                                                                 <Users className="mr-3" /> Passager (4)
                                                                             </div>
-                                                                            <div className="flex -space-x-1 overflow-hidden mt-2">
-                                                                                <Image
-                                                                                    className="inline-block rounded-full ring-2 ring-white"
-                                                                                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                                                    alt=""
-                                                                                    width={24}  // 6 x 4 = 24px (taille de l'image dans la classe)
-                                                                                    height={24} // 6 x 4 = 24px (taille de l'image dans la classe)
-                                                                                />
-                                                                                <Image
-                                                                                    className="inline-block rounded-full ring-2 ring-white"
-                                                                                    src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                                                    alt=""
-                                                                                    width={24}
-                                                                                    height={24}
-                                                                                />
-                                                                                <Image
-                                                                                    className="inline-block rounded-full ring-2 ring-white"
-                                                                                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
-                                                                                    alt=""
-                                                                                    width={24}
-                                                                                    height={24}
-                                                                                />
-                                                                                <Image
-                                                                                    className="inline-block rounded-full ring-2 ring-white"
-                                                                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                                                    alt=""
-                                                                                    width={24}
-                                                                                    height={24}
-                                                                                />
-                                                                            </div>
-                                                                        </div>
+                                                                        </div> */}
                                                                         
                                                                 </div>
 

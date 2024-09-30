@@ -1,6 +1,7 @@
 import { BaseResponse } from "../interfaces/ApiResponse";
 import jwt from 'jsonwebtoken';
 import { getBaseUrl } from "./baseUrl";
+import toast from "react-hot-toast";
 
 
 interface DecodedToken {
@@ -19,7 +20,7 @@ export const sendStateCommande = async (
     try {
         const response = await fetch(`${getBaseUrl()}/status/${commandeId}`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 newStatus: newStatus,
             }),
@@ -29,12 +30,14 @@ export const sendStateCommande = async (
             // Gestion des erreurs HTTP
             const errorText = await response.text();
             throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
+        } else {
+            toast.success('Commande mise à jour avec succès');
         }
 
         // Retourner la réponse JSON
         return await response.json();
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de la commande:', error);
+
         throw error;
     }
 };
@@ -46,7 +49,7 @@ export const sendStateCommandeByUsers = async (
     try {
         const response = await fetch(`${getBaseUrl()}/status-commande-users/${commandeId}`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 newStatus: newStatus,
             }),
@@ -61,7 +64,7 @@ export const sendStateCommandeByUsers = async (
         // Retourner la réponse JSON
         return await response.json();
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de la commande:', error);
+
         throw error;
     }
 };
@@ -76,7 +79,7 @@ export const sendCommande = async (
     try {
         const response = await fetch(`${getBaseUrl()}/reponseConducteur`, { // Remplace `/endpoint` par l'endpoint réel
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 commande_id: commandeId,
                 conducteur_id: conducteurId,
@@ -95,7 +98,7 @@ export const sendCommande = async (
         // Retourner la réponse JSON
         return await response.json();
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de la commande:', error);
+
         throw error;
     }
 };
@@ -125,7 +128,7 @@ export const PlaceOrder = async (params: PlaceOrderParams): Promise<BaseResponse
 
         const response = await fetch(`${getBaseUrl()}/commandes`, { // Remplace `/endpoint` par l'endpoint réel
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 trajet_id: trajetId,
                 utilisateur_id: utilisateurId,
@@ -153,7 +156,7 @@ export const PlaceOrder = async (params: PlaceOrderParams): Promise<BaseResponse
         // Retourner la réponse JSON
         return await response.json();
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de la commande:', error);
+
         throw error;
     }
 };
@@ -173,16 +176,16 @@ export const getAllcommandes = async (page: number, limit: number): Promise<Base
 
             throw new Error('Votre session a expiré, merci de vous reconnecter.');
         }
-        
+
         const id = decodedToken.id;
         const response = await fetch(`${getBaseUrl()}/commandes?page=${page}&limit=${limit}`, {
 
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json',},
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', },
         });
 
         return await response.json();
-        
+
     } catch (error) {
 
         console.error('Error getting user info:', error);

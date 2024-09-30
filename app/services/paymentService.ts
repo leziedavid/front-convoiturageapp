@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { BaseResponse } from "../interfaces/ApiResponse";
 import jwt from 'jsonwebtoken';
 import { getBaseUrl } from './baseUrl';
+import { number } from 'zod';
 
 interface DecodedToken {
     id: string;
@@ -45,6 +46,7 @@ export const launchPayment = async (amount: number): Promise<BaseResponse<any>> 
                 success: false,
                 code: response.status,
                 messages: `HTTP error! Status: ${response.status}`,
+                total:0,
             };
         }
         return await response.json();
@@ -56,6 +58,7 @@ export const launchPayment = async (amount: number): Promise<BaseResponse<any>> 
         return {
             success: false,
             messages: `Error launching payment: ${error}`,
+            total:0,
         };
     }
 };
@@ -120,6 +123,7 @@ export const launchRechargements = async (amount: number,paymentMethod:string): 
                 success: false,
                 code: response.status,
                 messages: `HTTP error! Status: ${response.status}`,
+                total:0,
             };
         }
         return await response.json();
@@ -130,6 +134,7 @@ export const launchRechargements = async (amount: number,paymentMethod:string): 
         return {
             success: false,
             messages: `Error launching payment: ${error}`,
+            total:0,
         };
     }
 };

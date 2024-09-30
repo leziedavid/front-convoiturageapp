@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -10,6 +10,14 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import jwt from 'jsonwebtoken';
 import OtpInput from '../components/Input/OtpInput';
+
+
+interface DecodedToken {
+    id: string;
+    exp: number;
+    otp?: string; // Si l'OTP est inclus dans le token
+}
+
 
 const emailSchema = z.object({
     email: z.string().min(1, 'Email requis').email('Email invalide'),
@@ -32,30 +40,66 @@ type OtpFormValues = z.infer<typeof otpSchema>;
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export default function Page() {
+
     const router = useRouter();
     const [stage, setStage] = useState<'email' | 'otp' | 'reset'>('email');
     const [otpToken, setOtpToken] = useState<string | null>(null);
-    // const otpRefs = useRef(Array.from({ length: 4 }, () => React.createRef<HTMLInputElement>()));
+    const [isLoading, setIsLoading] = useState(false);
+    const [countdown, setCountdown] = useState<number | null>(null);
+
 
     const { register: registerEmail, handleSubmit: handleEmailSubmit, formState: { errors: emailErrors } } = useForm<EmailFormValues>({
         resolver: zodResolver(emailSchema),
     });
 
-    const { register: registerOtp, handleSubmit: handleOtpSubmit } = useForm<OtpFormValues>({
-        resolver: zodResolver(otpSchema),
-    });
+    // const { register: registerOtp, handleSubmit: handleOtpSubmit } = useForm<OtpFormValues>({
+    //     resolver: zodResolver(otpSchema),
+    // });
+
+    const { register, handleSubmit, formState: { errors } } = useForm<OtpFormValues>();
+
 
     const { register: registerPassword, handleSubmit: handlePasswordSubmit, formState: { errors: passwordErrors } } = useForm<PasswordFormValues>({
         resolver: zodResolver(passwordSchema),
     });
 
+
+
+
+    const startCountdown = (token: string) => {
+        const decodedToken = jwt.decode(token) as DecodedToken;
+        const expirationTime = decodedToken.exp * 1000; // Convertir en millisecondes
+        const now = Date.now();
+        const timeLeft = expirationTime - now;
+
+        if (timeLeft > 0) {
+            setCountdown(Math.floor(timeLeft / 1000)); // Convertir en secondes
+
+            const interval = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev !== null && prev > 0) {
+                        return prev - 1;
+                    } else {
+                        clearInterval(interval);
+                        setStage('email'); // Retourner au formulaire d'email si le temps est écoulé
+                        return null;
+                    }
+                });
+            }, 1000);
+        } else {
+            setStage('email'); // Si le token est déjà expiré
+        }
+    };
+
+
     const onEmailSubmit = async (data: EmailFormValues) => {
         try {
             const apiResponse = await sendOtp(data.email);
             if (apiResponse.code === 200) {
-                setOtpToken(apiResponse.data.otpToken);
-                localStorage.setItem('otpToken', apiResponse.data.otpToken);
+                setOtpToken(apiResponse.data.token);
+                localStorage.setItem('otpToken', apiResponse.data.token);
                 setStage('otp');
+                startCountdown(apiResponse.data.token); // Démarrer le décompte
                 toast.success('OTP envoyé ! Vérifiez votre email.');
             } else {
                 toast.error(apiResponse.messages!);
@@ -65,7 +109,14 @@ export default function Page() {
         }
     };
 
-    const onOtpSubmits = async (data: OtpFormValues) => {
+    // Effet pour nettoyer le décompte lorsque le composant est démonté
+    useEffect(() => {
+        return () => {
+            setCountdown(null); // Réinitialiser le décompte
+        };
+    }, []);
+
+    const onOtpSubmits2 = async (data: OtpFormValues) => {
         console.log('OTP soumis:', data); // Ajoute ceci pour vérifier l'appel
         const otp = data.otp;
     
@@ -86,10 +137,64 @@ export default function Page() {
         }
     };
 
-    const onOtpSubmit = (data: { otp: string }) => {
-        console.log('OTP soumis:', data.otp);
-    };
+    const onOtpSubmit = async () => {
+        
+        const otp = otpDigits.join('');
+        
+        // Validation simple
+        if (otp.length !== 4) {
+            toast.error("L'OTP doit faire 4 chiffres.");
+            return;
+        }
 
+        setIsLoading(true); // Démarrer le chargement
+
+        try {
+            console.log('OTP soumis:', otp);
+
+            // Vérifiez que otpToken est valide
+            const otpTokens = localStorage.getItem('otpToken');
+            if (!otpTokens) {
+                toast.error("Token OTP manquant. Veuillez ressaisir votre email.");
+                setStage('email');
+                return;
+            }
+
+            const decodedToken = jwt.decode(otpTokens) as DecodedToken; // Utiliser l'interface
+
+            console.log('decoded Token:', decodedToken);
+            // Vérifiez si le token a une propriété exp
+            if (!decodedToken || typeof decodedToken.exp !== 'number') {
+                toast.error("Token OTP invalide.");
+                setStage('email');
+                return;
+            }
+
+            const isExpired = decodedToken.exp * 1000 < Date.now();
+
+            if (isExpired) {
+                toast.error("Le token a expiré. Veuillez ressaisir votre email.");
+                setStage('email');
+                return;
+            }
+
+            // Vérifiez si l'OTP correspond
+            if (otp === decodedToken.otp) {
+                toast.success("Token vérifié avec succès !");
+                setStage('reset');
+            } else {
+                toast.error("Token invalide.");
+                // Réinitialiser les champs d'OTP si nécessaire
+                setOtpDigits(['', '', '', '']);
+            }
+        } catch (error) {
+            console.error("Erreur lors de la vérification de l'OTP:", error);
+            toast.error("Une erreur s'est produite lors de la vérification.");
+        } finally {
+            setIsLoading(false); // Arrêter le chargement
+        }
+    };
+    
     const [otpDigits, setOtpDigits] = useState(['', '', '', '']);
     const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -140,42 +245,35 @@ export default function Page() {
                                         />
                                         {emailErrors.email && <p>{emailErrors.email.message}</p>}
                                     </div>
-                                    <button className="flex w-full justify-center rounded-md border border-transparent bg-black py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2" type="submit">Vérifier l'email</button>
+                                    <button className="flex w-full justify-center rounded-md border border-transparent bg-black py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2" type="submit">Vérifier l&apos;email</button>
                                 </form>
                             )}
 
                             {stage === 'otp' && (
-                                <form onSubmit={handleOtpSubmit(onOtpSubmit)} className="space-y-6">
+
+                                <form onSubmit={handleSubmit(onOtpSubmit)} className="space-y-6">
                                     <div className="flex space-x-2">
-
-                                        {/* {otpRefs.current.map((ref, index) => (
-                                            <input
+                                        {otpDigits.map((digit, index) => (
+                                            <OtpInput
                                                 key={index}
-                                                ref={ref}
-                                                type="text"
-                                                maxLength={1}
-                                                onChange={(e) => {
-                                                    if (e.target.value.length === 1 && index < otpRefs.current.length - 1) {
-                                                        otpRefs.current[index + 1].current!.focus();
-                                                    } else if (e.target.value.length === 0 && index > 0) {
-                                                        otpRefs.current[index - 1].current!.focus();
-                                                    }
-                                                }}
-                                                className="block w-full rounded-md border border-gray-300 py-3 px-4 text-gray-900 shadow-sm outline-none focus:border-orange-600 focus:ring-black"
+                                                ref={(input) => { otpRefs.current[index] = input; }}
+                                                value={digit}
+                                                onChange={(value) => handleOtpChange(index, value)}
                                             />
-                                        ))} */} {otpDigits.map((digit, index) => (
-                        <OtpInput
-                        key={index}
-                        ref={(input) => { otpRefs.current[index] = input; }}
-                        value={digit}
-                        onChange={(value) => handleOtpChange(index, value)}
-                    />
-                ))}
-
-
+                                        ))}
                                     </div>
-                                    <button className="flex w-full justify-center rounded-md border border-transparent bg-black py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2" type="submit">Vérifier le token</button>
+                                    {countdown !== null && (
+                                        <p>Temps restant : {countdown} secondes</p>
+                                    )}
+                                    <button
+                                        className={`flex w-full justify-center rounded-md border border-transparent ${isLoading ? 'bg-gray-400' : 'bg-black'} py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2`}
+                                        type="submit"
+                                        disabled={isLoading} >
+                                        {isLoading ? 'Vérification...' : 'Vérifier le token'}
+                                    </button>
+                                    {errors.otp && <p className="text-red-500">{errors.otp.message}</p>}
                                 </form>
+
                             )}
 
                             {stage === 'reset' && (
@@ -208,7 +306,7 @@ export default function Page() {
                     </div>
                 </div>
                 <div className="relative hidden w-0 flex-1 lg:block">
-                    <Image className="absolute inset-0 h-full w-full object-cover brightness-50" src="/img/mdppasse.jpeg" alt="" layout="fill" objectFit="cover" />
+                    <Image className="absolute inset-0 h-full w-full object-cover brightness-50" src="/img/password.jpg" alt="" layout="fill" objectFit="cover" />
                 </div>
             </div>
         </>

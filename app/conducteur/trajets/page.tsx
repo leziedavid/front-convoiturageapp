@@ -1,5 +1,8 @@
 "use client";
 
+
+import dynamic from 'next/dynamic';
+
 import { TrajetResponse,Trajet } from '@/app/interfaces/Trajet';
 import { DateHeur, DateTime } from '@/app/services/dateUtils';
 import { getDriverTrajet } from '@/app/services/DriverServices';
@@ -13,10 +16,10 @@ import UserProfil from '../../components/includes/userProfil';
 import TrajetPreloader from '@/app/components/Preloader/TrajetPreloader';
 import TrajetNotFound from '@/app/components/error/TrajetNotFound';
 import Pagination from '@/app/components/Pagination/Pagination';
-import { getAllTrajetById } from '@/app/services/TrajetServices';
-import MapComponent from '@/app/components/Map/MapComponent';
+import { getAllTrajetById, updateStatusTrajet } from '@/app/services/TrajetServices';
+// import MapComponent from '@/app/components/Map/MapComponent';
 import Modal from '@/app/components/Modal/Modal';
-
+const MapComponent = dynamic(() => import('@/app/components/Map/MapComponent'), { ssr: false });
 
 const PAGE_SIZE = 3; // Nombre de trajets par page
 
@@ -65,6 +68,45 @@ export default function Page() {
         router.push('/conducteur/nouveau');
     };
 
+    const getAllTrajet = async () => {
+
+        try {
+
+            setLoading(true);
+            const res = await getDriverTrajet(currentPage, pageSize);
+            if (res.code === 200) {
+                const adaptedResponse: TrajetResponse = {
+                    trajets: res.data,
+                    total: res.total
+                };
+                console.log(res.total);
+                setResponse(adaptedResponse);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 1000);
+            }
+        } catch (err) {
+
+            setError('Error fetching user info');
+            console.error('Error fetching user info:', err);
+            setLoading(false);
+
+        }
+    };
+
+    const startUp = async (id: string) => {
+        const newStatus = "start";
+        await updateStatusTrajet(id, newStatus);
+        getAllTrajet();
+        
+    };
+
+    const finished = async (id: string) => {
+        const newStatus = "finished";
+        await updateStatusTrajet(id, newStatus);
+        getAllTrajet();
+    };
+
     const OpenDrawer = async (id: string) => {
         try {
             const res = await getAllTrajetById(id);
@@ -97,9 +139,8 @@ export default function Page() {
         }
     }, [data]);
     
-
-
     useEffect(() => {
+
         const fetchTrajetDrivers = async () => {
 
             try {
@@ -239,23 +280,27 @@ export default function Page() {
 
                                                                 <div className="flex justify-end gap-2">
 
-                                                                    {trajet.commandes.length > 0 ? (
-                                                                        <button onClick={() => OpenDrawer(trajet.id)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-green-700 hover:bg-[#a1683a]">
+                                                                    {trajet.commandes.length > 0 && trajet.etat_trajet=="pending" ? (
+                                                                        <button onClick={() => startUp(trajet.id)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-green-700 hover:bg-[#a1683a]">
                                                                         Démarrer le trajet
                                                                     </button>
+                                                                    ) : null}
+
+                                                                    {trajet.commandes.length > 0 && trajet.etat_trajet=="start" ? (
+                                                                        <button onClick={() => finished(trajet.id)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-red-700 hover:bg-[#a1683a]">
+                                                                            Terminer le trajet
+                                                                        </button>
                                                                     ) : null}
 
                                                                     <button onClick={() => OpenDrawer(trajet.id)} className="rounded text-xs font-semibold leading-6 text-white p-1 px-4 bg-[#f7872e] hover:bg-[#a1683a]">
                                                                         Détail du trajet
                                                                     </button>
 
-                                                                    {trajet.commandes.length === 0 ? (
+                                                                    {trajet.commandes.length === 0 && trajet.etat_trajet=="pending" ? (
                                                                         <button className="rounded text-xs font-semibold leading-6 text-white p-1 px-3 bg-red-600 hover:bg-red-800">
                                                                             <X name="X" className="w-4" />
                                                                         </button>
                                                                     ) : null}
-
-
 
                                                                 </div>
 

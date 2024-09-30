@@ -3,6 +3,8 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { X as XIcon, BarChart as BarChartIcon, Users as UsersIcon, MessageSquare as MessageSquareIcon, CreditCard as CreditCardIcon, Route as RouteIcon, Folder as FolderIcon, Cog as CogIcon } from 'lucide-react';
+import Image from 'next/image';
+
 
 const navigation = [
     { name: 'Tableau de bord', href: '/admin/dashboard', icon: BarChartIcon, current: true },
@@ -61,10 +63,13 @@ const Sidebar: React.FC<{ sidebarOpen: boolean; setSidebarOpen: React.Dispatch<R
                                     </div>
                                 </Transition.Child>
                                 <div className="flex flex-shrink-0 items-center px-4">
-                                    <img
+                                    <Image
                                         className="h-8 w-auto"
                                         src="https://tailwindui.com/img/logos/mark.svg?color=gray&shade=500"
-                                        alt="Your Company" />
+                                        alt="Your Company"
+                                        width={32} // Largeur en pixels
+                                        height={32} // Hauteur en pixels
+                                    />
                                 </div>
                                 <div className="mt-5 h-0 flex-1 overflow-y-auto">
                                     <nav className="space-y-1 px-2">

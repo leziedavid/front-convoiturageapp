@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
 
     return (
         <footer>
-            <div className="w-full bg-black to-black">
+            <div className="w-full bg-black to-black mt-0">
                 <div className="w-full px-4 md:px-12 lg:px-16 py-5 mx-auto">
                     <div className="grid gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
                         <div className="flex justify-between items-center">

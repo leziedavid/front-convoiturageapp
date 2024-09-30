@@ -7,31 +7,26 @@ import { getAllPassageerCommandes } from '@/app/services/PassagerServices';
 import { DateHeur, DateTime } from '@/app/services/dateUtils';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Toaster } from 'react-hot-toast';
 import DesktopNavBar from '../../components/includes/DesktopNavBar';
 import MobileNavBar from '../../components/includes/MobileNavBar';
 import { Commande } from '../../interfaces/GlobalType';
 import Pagination from '@/app/components/Pagination/Pagination';
 import Modal from '@/app/components/Modal/Modal';
-import { sendStateCommande, sendStateCommandeByUsers } from '@/app/services/CommandeService';
+import { sendStateCommandeByUsers } from '@/app/services/CommandeService';
 
-
-const PAGE_SIZE = 3; // Nombre de trajets par page
+const PAGE_SIZE = 3;
 
 export default function Page() {
-
-
     const router = useRouter();
 
     const [response, setResponse] = useState<Commande[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
     const [total, setTotal] = useState<number>(0);
-    const [currentPage, setCurrentPage] = useState<number>(1); // Page actuelle
-    const [pageSize, setPageSize] = useState<number>(PAGE_SIZE); // Taille de la page
-
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pageSize, setPageSize] = useState<number>(PAGE_SIZE);
 
     const [actionMessage, setActionMessage] = useState("");
     const [onDeleteMessage, setOnDeleteMessage] = useState("");
@@ -40,61 +35,24 @@ export default function Page() {
     const [step, setStep] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-
-    const fetchUserInfo = async () => {
-
+    const fetchUserInfo = useCallback(async () => {
         try {
-
-            const res = await  getAllPassageerCommandes(currentPage, pageSize)
-
-            if(res.code==200){
-
+            const res = await getAllPassageerCommandes(currentPage, pageSize);
+            if (res.code === 200) {
                 setResponse(res.data);
                 setTotal(res.total);
-
             }
-
         } catch (err) {
-
             setError('Error fetching user info');
             console.error('Error fetching user info:', err);
-
         } finally {
+            setLoading(false);
         }
-    };
+    }, [currentPage, pageSize]);
 
     useEffect(() => {
         fetchUserInfo();
-        setTimeout(() => {
-            setLoading(false);
-        }, 1000);
-
-    }, [currentPage, pageSize]);
-
-    const orders = [
-        {
-            number: 'N° F243523',
-            amount: '4 000 XOF',
-            startTime: '08h00',
-            startAddress: 'Abidjan, Cote d’Ivoire, Adjamé, 253 rue 263',
-            endTime: '12h00',
-            endAddress: 'Agboville, Cote d’Ivoire, Riviera, 276 post 365E FDTF',
-            date: '10/10/2021',
-        },
-        {
-            number: 'N° F243523',
-            amount: '4 000 XOF',
-            startTime: '08h00',
-            startAddress: 'Abidjan, Cote d’Ivoire, Adjamé, 253 rue 263',
-            endTime: '12h00',
-            endAddress: 'Agboville, Cote d’Ivoire, Riviera, 276 post 365E FDTF',
-            date: '10/10/2021',
-        },
-        
-        // Ajoutez plus de commandes ici si nécessaire
-    ];
-    
-
+    }, [fetchUserInfo]);
 
     const handleDelete = async (id: string) => {
         const newStatus = "dismissed";
@@ -103,14 +61,12 @@ export default function Page() {
         fetchUserInfo();
     };
 
-
     const handleValidate = async (id: string) => {
         const newStatus = "validated";
         await sendStateCommandeByUsers(id, newStatus);
         setIsModalOpen(false);
         fetchUserInfo();
     };
-
 
     const RejeterCommande = (value: string) => {
         setStep(2);
@@ -120,8 +76,7 @@ export default function Page() {
         setOnCloseMessage("FERMER");
         setIsModalOpen(true);
     };
-
-
+    
 
     return (
 

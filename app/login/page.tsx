@@ -77,11 +77,7 @@ export default function Page() {
                 <div className="flex flex-1 flex-col justify-center py-0 px-6 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
                     <div className="mx-auto w-full max-w-sm lg:w-96">
                         <div>
-                            <h1 className="text-4xl font-bold tracking-tight">
-                                <span className="text-6xl text-orange-500">C</span>ovoit’
-                                <span className="text-6xl text-orange-500">I</span>voire
-                            </h1>
-                            <h1 className="mt-6 text-2xl font-bold tracking-tight text-gray-900"> Connectez-vous à votre compte </h1>
+                            <h1 className="text-4xl font-bold tracking-tight"> Connectez-vous à votre compte</h1>
                         </div>
                         <div className="mt-6">
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -169,11 +165,7 @@ export default function Page() {
                 </div>
 
                 <div className="relative hidden w-0 flex-1 lg:block">
-                    <Image className="absolute inset-0 h-full w-full object-cover brightness-50"
-                        src="/img/home1.jpg"
-                        alt=""
-                        layout="fill"
-                        objectFit="cover"
+                    <Image className="absolute inset-0 h-full w-full object-cover brightness-50" src="/img/woman.jpg" alt="" layout="fill" objectFit="cover"
                     />
                 </div>
             </div>
