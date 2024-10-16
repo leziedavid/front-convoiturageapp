@@ -14,7 +14,7 @@ interface LayoutProps {
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Create Next App",
+  title: "Covoit’Ivoire",
   description: "Compte utilisateur",
 };
 

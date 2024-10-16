@@ -7,7 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Dialog } from '@headlessui/react';
 import { Route, LibraryBig, Smartphone, CircleHelp, LockKeyhole, Menu, X, User } from 'lucide-react';
 import Link from 'next/link';
-
+import Image from 'next/image';
 
 // Définir le type du token décodé
 interface DecodedToken {

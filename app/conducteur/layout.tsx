@@ -13,8 +13,8 @@ interface LayoutProps {
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Create Next App',
-  description: 'Compte utilisateur',
+  title: 'Covoit’Ivoire',
+  description: 'Compte conducteur',
 };
 
 const ConducteurLayout: React.FC<LayoutProps> = ({ children }) => {

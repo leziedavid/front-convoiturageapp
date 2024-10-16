@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 type NavigationItem = {
     name: string;
@@ -30,7 +31,12 @@ const HeaderClient: React.FC = () => {
     const [name, setName] = useState<string>('');
     const [href, setHref] = useState<string>('');
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
     const router = useRouter();
+
+    const navigateTo = () => {
+        router.push('/');
+    };
 
     const checkToken = useCallback(() => {
         const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
@@ -99,9 +105,19 @@ const HeaderClient: React.FC = () => {
                 <div className="relative lg:w-full">
                     <div className="relative px-6 py-4 lg:pl-8 lg:pr-8">
                         <nav className="flex items-center justify-between sm:h-10 lg:justify-between" aria-label="Global">
-                            <Link href="/" className="text-white text-xl">
+                            {/* <Link href="/" className="text-white text-xl">
                                 <span className="text-4xl text-[#f7872e] font-bold">C</span>ovoit’<span className="text-4xl text-[#f7872e] font-bold">I</span>voire
-                            </Link>
+                            </Link> */}
+
+                            <div className="relative h-40 w-40 ">
+                                <Image onClick={navigateTo}
+                                    src="/img/logo1.jpeg"
+                                    alt="Logo"
+                                    fill
+                                    className="object-contain brightness-100 cursor-pointer"
+                                    style={{ objectFit: 'contain' }}
+                                />
+                            </div>
 
                             <button type="button" className="-m-2.5 rounded-md p-2.5 bg-[#f7872e] lg:hidden" onClick={() => setMobileMenuOpen(true)}>
                                 <Menu className="text-white" />
@@ -150,9 +166,21 @@ const HeaderClient: React.FC = () => {
                                     <button type="button" className="-m-2.5 inline-flex items-center bg-gray-200 justify-center rounded-md p-2.5 text-black" onClick={() => setMobileMenuOpen(false)}>
                                         <X className="text-dark" />
                                     </button>
-                                    <Link href="/" className="-m-1.5 p-1.5 text-3xl">
+
+                                    {/* <Link href="/" className="-m-1.5 p-1.5 text-3xl">
                                         <span className="text-4xl text-[#f7872e]">C</span>ovoit’<span className="text-4xl text-[#f7872e]">I</span>voire
-                                    </Link>
+                                    </Link> */}
+
+                                    <div className="relative h-40 w-40 overflow-hidden">  {/* Ajout de overflow-hidden */}
+                                    <Image onClick={navigateTo}
+                                        src="/img/logo1.jpeg"
+                                        alt="Logo"
+                                        fill
+                                        className="object-contain brightness-100"
+                                        style={{ objectFit: 'contain' }}
+                                    />
+                                </div>
+
                                 </div>
                                 <div className="mt-3 space-y-2">
                                     {navigation.map((item) => (

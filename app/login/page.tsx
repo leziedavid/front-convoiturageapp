@@ -165,8 +165,17 @@ export default function Page() {
                 </div>
 
                 <div className="relative hidden w-0 flex-1 lg:block">
-                    <Image className="absolute inset-0 h-full w-full object-cover brightness-50" src="/img/woman.jpg" alt="" layout="fill" objectFit="cover"
-                    />
+                    {/* <Image className="absolute inset-0 h-full w-full object-cover brightness-50" src="/img/woman.jpg" alt="" layout="fill" objectFit="cover"
+                    /> */}
+                    <div className="absolute inset-0 h-full w-full">
+                        <Image
+                            src="/img/woman.jpg"
+                            alt=""
+                            fill
+                            className="object-cover brightness-50"
+                            style={{ objectFit: 'cover' }}
+                        />
+                    </div>
                 </div>
             </div>
         </>

@@ -1,22 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { FC } from 'react';
-import { CheckIcon, ChevronRight } from 'lucide-react';
 import Icon from '@/app/components/Icon';
-import { TrajetResponse } from '@/app/interfaces/Trajet';
-import { getAllTrajet, SearchTrajet } from '@/app/services/TrajetServices';
+import Pagination from '@/app/components/Pagination/Pagination';
 import TrajetPreloader from '@/app/components/Preloader/TrajetPreloader';
 import TrajetNotFound from '@/app/components/error/TrajetNotFound';
-import { DateHeur } from '@/app/services/dateUtils';
-import GooglePlacesAutocomplete from 'react-google-autocomplete';
-import { z } from 'zod';
+import { TrajetResponse } from '@/app/interfaces/Trajet';
+import { getAllTrajet, SearchTrajet } from '@/app/services/TrajetServices';
 import { convertToISODateTime } from '@/app/services/convertToISODateTime';
-import Pagination from '@/app/components/Pagination/Pagination';
+import { DateHeur } from '@/app/services/dateUtils';
+import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { FC, useEffect, useState } from 'react';
+import GooglePlacesAutocomplete from 'react-google-autocomplete';
 import { Toaster } from 'react-hot-toast';
+import { z } from 'zod';
 
 // Type pour PlaceResult de l'API Google Maps
 type PlaceResult = google.maps.places.PlaceResult;
@@ -208,7 +207,15 @@ const Detail: FC = () => {
             <Toaster position="top-right" reverseOrder={false} />
 
             <div className="relative isolate overflow-hidden bg-gray-900">
-                <Image src="/img/image copy 2.png" alt="" layout="fill" objectFit="cover" className="absolute inset-0 -z-10 brightness-50"/>
+                {/* <Image src="/img/image2.png" alt="" layout="fill" objectFit="cover" className="absolute inset-0 -z-10 brightness-50"/> */}
+                <Image
+                        src="/img/image2.png"
+                        alt=""
+                        fill
+                        className="absolute inset-0 -z-10 brightness-50 object-cover"
+                        style={{ objectFit: 'cover' }}
+                    />
+
                 <div className="px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl pt-20 sm:pt-24">
                         <div className="text-center">
@@ -362,7 +369,7 @@ const Detail: FC = () => {
 
                                     </div>
 
-                                    <div className="absolute -bottom-8 -right-8 p-2 ">
+                                    <div className="absolute -bottom-1 -right-8 p-10 ">
                                         <Image src="/img/im1.png" layout="fill" objectFit="cover"  className="h-20 md:h-32" alt="" />
                                     </div>
 
@@ -381,28 +388,6 @@ const Detail: FC = () => {
                                                 </div>
                                             </div>
                                         </a>
-                                        
-                                        {/*
-                                        <a href="#" className="group block flex-shrink-0">
-                                            <div className="flex items-center">
-                                                <div className="relative">
-                                                    <Image
-                                                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                        alt=""
-                                                        width={36}
-                                                        height={36}
-                                                        className="inline-block h-9 w-9 rounded-full"
-                                                    />
-                                                    <div className="w-4 h-4 absolute right-0 bottom-0 rounded-full bg-[#f7872e] border-2 border-white"></div>
-                                                </div>
-                                                <div className="ml-3 flex flex-col text-left">
-                                                    <p className="text-sm font-medium text-gray-900 group-hover:text-gray-600">
-                                                        Jason Keven
-                                                    </p>
-                                                    <p className="text-xs text-gray-600">Passager</p>
-                                                </div>
-                                            </div>
-                                        </a> */}
 
                                     </div>
 
