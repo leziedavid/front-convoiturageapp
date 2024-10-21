@@ -1,12 +1,34 @@
 "use client";
 
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { User, History, MapPin, Settings } from 'lucide-react';
-import { usePathname } from 'next/navigation'; // Utilisation de next/navigation
+import { usePathname, useRouter } from 'next/navigation'; // Utilisation de next/navigation
 
 const DesktopNavBarDriver: React.FC = () => {
         const pathname = usePathname(); // Utilisation du hook usePathname
+        const router = useRouter();
+        
+        // Fonction pour gérer la déconnexion
+        const handleSignOut = () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('Graphe');
+                document.cookie = 'token=; Max-Age=0; path=/';
+                document.cookie = 'Graphe=; Max-Age=0; path=/';
+                router.push('/');
+        };
+
+        const checkToken = useCallback(() => {
+                const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+                if (!token) {
+                        router.push('/');
+                        return;
+                }
+        }, [router]);
+
+        useEffect(() => {
+        checkToken();
+        }, [checkToken]);
 
         return (
                 <div className="flex md:flex-col overflow-x-auto gap-2">

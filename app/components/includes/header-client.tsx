@@ -44,6 +44,8 @@ const HeaderClient: React.FC = () => {
         if (!token) {
             setIsAuthenticated(false);
             // router.push('/');
+            localStorage.removeItem('token');
+            localStorage.removeItem('Graphe');
             return;
         }else{
             setIsAuthenticated(true);
@@ -94,6 +96,8 @@ const HeaderClient: React.FC = () => {
     }, []);
 
     const handleSignOut = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('Graphe');
         document.cookie = 'token=; Max-Age=0; path=/';
         document.cookie = 'Graphe=; Max-Age=0; path=/';
         router.push('/');
@@ -109,7 +113,7 @@ const HeaderClient: React.FC = () => {
                                 <span className="text-4xl text-[#f7872e] font-bold">C</span>ovoit’<span className="text-4xl text-[#f7872e] font-bold">I</span>voire
                             </Link> */}
 
-                            <div className="relative h-40 w-40 ">
+                            <div className="relative h-14 w-32">
                                 <Image onClick={navigateTo}
                                     src="/img/logo1.jpeg"
                                     alt="Logo"

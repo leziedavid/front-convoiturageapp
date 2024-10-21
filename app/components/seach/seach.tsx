@@ -51,6 +51,7 @@ const Seach: React.FC = () => {
             // trajetSchema.parse(formData);
             localStorage.setItem('formDatas', JSON.stringify(formData));
             router.push('/trajets/details');
+
         } catch (err) {
             if (err instanceof z.ZodError) {
                 const errorMessages = err.errors.map(e => e.message).filter(message => message !== 'Required');

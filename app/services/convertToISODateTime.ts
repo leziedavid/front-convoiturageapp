@@ -1,4 +1,8 @@
 export const convertToISODateTime = (dateTimeStr: string) => {
     const date = new Date(dateTimeStr);
-    return date.toISOString();
+    if(dateTimeStr){
+        return date.toISOString();
+    }else{
+        return null;
+    }
 };
