@@ -1,7 +1,9 @@
+"use client";
+
 import { Dialog, Transition } from '@headlessui/react';
 import { Wallet } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -28,6 +30,15 @@ interface PaymentProps {
 const PaymentModal: React.FC<PaymentProps> = ({ wallet,fetchStatistics }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Wave');
+
+    // useEffect(() => {
+    //     if (wallet !== undefined && wallet > 600) {
+    //         setIsOpen(false);
+    //     } else {
+    //         setIsOpen(true);
+    //     }
+    // }, [wallet]); // Ajoute 'wallet' comme dépendance
+    
 
     const { register, handleSubmit, formState: { errors } } = useForm<PaymentFormValues>({
         resolver: zodResolver(paymentSchema),
@@ -67,6 +78,7 @@ const PaymentModal: React.FC<PaymentProps> = ({ wallet,fetchStatistics }) => {
             console.error('Failed to check payment status:', error);
         }
     };
+
 
     return (
 

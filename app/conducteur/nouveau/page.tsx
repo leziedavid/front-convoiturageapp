@@ -149,6 +149,7 @@ const Page: React.FC = () => {
             console.log('Données formatées:', formData);
             setErrors({});
             const response = await trajetOnSubmit(formData);
+            
             if (response.code === 201 && response.data) {
 
                 toast.success('Trajet créé avec succès!');
@@ -156,10 +157,9 @@ const Page: React.FC = () => {
                     router.push('/conducteur/trajets');
                 }, 1500);
                 
-            } else {
+            } else if(response.code === 400) {
 
-                toast.error("Erreur lors de l'ajout du trajet.");
-
+                toast.error(response.messages ?? "Une erreur est survenue.");
             }
         } catch (error) {
             
@@ -274,9 +274,11 @@ const Page: React.FC = () => {
                                                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                                                     Nouveau trajet
                                                 </h1>
-                                                <p className="mt-2 text-sm text-gray-500">
-                                                    Vous pouvez suivre l&apos;historique de vos courses
-                                                </p>
+                                                {/* <p className="mt-2 text-sm text-gray-500">  Vous pouvez suivre l&apos;historique de vos courses </p> */}
+                                                    <p className="mt-1 text-base text-gray-500">
+                                                        Tous les champs marqués <span className="text-red-500">(*)</span> sont obligatoires.
+                                                    </p>
+
                                             </div>
                                         </div>
                                         <div>
@@ -299,7 +301,7 @@ const Page: React.FC = () => {
                                                     <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-8">
 
                                                         <div>
-                                                            <label htmlFor="depart" className="block text-sm font-medium text-gray-900">Départ</label>
+                                                            <label htmlFor="depart" className="block text-sm font-medium text-gray-900">Départ <span className="text-red-500">*</span> </label>
                                                             <div className="mt-1">
                                                                 <GooglePlacesAutocomplete apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY as string}
                                                                     onPlaceSelected={(place: PlaceResult) => {
@@ -316,7 +318,7 @@ const Page: React.FC = () => {
                                                         </div>
 
                                                         <div>
-                                                            <label htmlFor="arrivee" className="block text-sm font-medium text-gray-900">Arrivée</label>
+                                                            <label htmlFor="arrivee" className="block text-sm font-medium text-gray-900">Arrivée <span className="text-red-500">*</span>  </label>
                                                             <div className="mt-1">
                                                                 <GooglePlacesAutocomplete
                                                                     apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY as string}
@@ -337,7 +339,7 @@ const Page: React.FC = () => {
                                                         </div>
 
                                                         <div>
-                                                            <label htmlFor="distance" className="block text-sm font-medium text-gray-900">Distance</label>
+                                                            <label htmlFor="distance" className="block text-sm font-medium text-gray-900">Distance <span className="text-red-500">*</span>  </label>
                                                             <div className="mt-1">
                                                                 <input type="text" id="distance" value={distance !== null ? `${distance.toFixed(2)} km` : 'Calcul en cours...'}  readOnly className="block w-full rounded-md border border-gray-300 py-2 px-2 text-gray-900 shadow-sm outline-none focus:border-orange-600 focus:ring-black"
                                                                 />
@@ -345,7 +347,7 @@ const Page: React.FC = () => {
                                                         </div>
 
                                                         <div>
-                                                            <label htmlFor="estimatedTime" className="block text-sm font-medium text-gray-900">Nombre d&apos;heur estaimé</label>
+                                                            <label htmlFor="estimatedTime" className="block text-sm font-medium text-gray-900">Nombre d&apos;heur estaimé </label>
                                                             <div className="mt-1">
                                                                 <input type="text" id="estimatedTime" value={estimatedTime !== null ? `${estimatedTime}` : 'Calcul en cours...'}  readOnly className="block w-full rounded-md border border-gray-300 py-2 px-2 text-gray-900 shadow-sm outline-none focus:border-orange-600 focus:ring-black"
                                                                 />
@@ -353,7 +355,7 @@ const Page: React.FC = () => {
                                                         </div>
 
                                                         <div>
-                                                            <label htmlFor="depart-date" className="block text-sm font-medium text-gray-900">Départ date</label>
+                                                            <label htmlFor="depart-date" className="block text-sm font-medium text-gray-900">Départ date <span className="text-red-500">*</span>  </label>
                                                             <div className="mt-1">
                                                                 <input
                                                                     type="datetime-local"
@@ -366,7 +368,7 @@ const Page: React.FC = () => {
                                                         </div>
 
                                                         <div>
-                                                            <label htmlFor="arrivee-date" className="block text-sm font-medium text-gray-900">Arrivée date</label>
+                                                            <label htmlFor="arrivee-date" className="block text-sm font-medium text-gray-900">Arrivée date <span className="text-red-500">*</span>  </label>
                                                             <div className="mt-1">
                                                                 <input
                                                                     type="datetime-local"
@@ -378,13 +380,13 @@ const Page: React.FC = () => {
                                                         </div>
                                                         
                                                         <div>
-                                                            <label htmlFor="vehicule" className="block text-sm font-medium text-gray-900">Choisir un véhicule</label>
+                                                            <label htmlFor="vehicule" className="block text-sm font-medium text-gray-900">Choisir un véhicule <span className="text-red-500">*</span> </label>
                                                             <div className="mt-1">
                                                                 <SelectVehicle setVehicule={setVehicule} vehicles={[]} />
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <label htmlFor="places" className="block text-sm font-medium text-gray-900">Nombre de places</label>
+                                                            <label htmlFor="places" className="block text-sm font-medium text-gray-900">Nombre de places <span className="text-red-500">*</span> </label>
                                                             <div className="mt-1">
                                                                 <input
                                                                     type="number"
@@ -396,7 +398,7 @@ const Page: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <label htmlFor="prix" className="block text-sm font-medium text-gray-900">Fixez votre prix par place</label>
+                                                            <label htmlFor="prix" className="block text-sm font-medium text-gray-900">Fixez votre prix par place <span className="text-red-500">*</span> </label>
                                                             <div className="mt-1">
                                                                 <input
                                                                     type="number"
@@ -407,11 +409,11 @@ const Page: React.FC = () => {
                                                                 />
                                                             </div>
                                                             <small className="text-gray-500">
-                                                                *Prix idéal pour ce trajet ! Il est conseillé de fixer un prix inférieur aux prix des transports en commun pour gagner des passagers en un rien de temps.
+                                                                * Prix idéal pour ce trajet ! Il est conseillé de fixer un prix inférieur aux prix des transports en commun pour gagner des passagers en un rien de temps.
                                                             </small>
                                                         </div>
                                                         <div className="sm:col-span-2">
-                                                            <label htmlFor="message" className="block text-sm font-medium text-gray-900">Quelque chose à ajouter sur votre trajet ?</label>
+                                                            <label htmlFor="message" className="block text-sm font-medium text-gray-900">Quelque chose à ajouter sur votre trajet ? <span className="text-red-500">*</span> </label>
                                                             <small id="message-max" className="text-sm text-gray-500">Max. 500 characters</small>
                                                             <div className="mt-1">
                                                                 <textarea id="message" name="message"  rows={4} className="block w-full rounded-md border border-gray-300 py-3 px-4 text-gray-900 shadow-sm outline-none focus:border-orange-600 focus:ring-black"

@@ -166,34 +166,53 @@ const HeaderClient: React.FC = () => {
 
                         <Dialog open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}>
                             <DialogPanel className="fixed inset-0 z-40 overflow-y-auto bg-white px-6 py-6 lg:hidden">
-                                <div className="flex flex-row-reverse items-center justify-between border-b-2 pb-4">
-                                    <button type="button" className="-m-2.5 inline-flex items-center bg-gray-200 justify-center rounded-md p-2.5 text-black" onClick={() => setMobileMenuOpen(false)}>
-                                        <X className="text-dark" />
-                                    </button>
+                                    <div className="flex flex-row-reverse items-center justify-between border-b-2 pb-4">
+                                        <button type="button" className="-m-2.5 inline-flex items-center bg-gray-200 justify-center rounded-md p-2.5 text-black" onClick={() => setMobileMenuOpen(false)}>
+                                            <X className="text-dark" />
+                                        </button>
 
-                                    {/* <Link href="/" className="-m-1.5 p-1.5 text-3xl">
-                                        <span className="text-4xl text-[#f7872e]">C</span>ovoit’<span className="text-4xl text-[#f7872e]">I</span>voire
-                                    </Link> */}
+                                        <div className="relative h-40 w-40 overflow-hidden">  {/* Ajout de overflow-hidden */}
+                                            <Image onClick={navigateTo}
+                                                src="/img/logo1.jpeg"
+                                                alt="Logo"
+                                                fill
+                                                className="object-contain brightness-100"
+                                                style={{ objectFit: 'contain' }}
+                                            />
+                                        </div>
 
-                                    <div className="relative h-40 w-40 overflow-hidden">  {/* Ajout de overflow-hidden */}
-                                    <Image onClick={navigateTo}
-                                        src="/img/logo1.jpeg"
-                                        alt="Logo"
-                                        fill
-                                        className="object-contain brightness-100"
-                                        style={{ objectFit: 'contain' }}
-                                    />
-                                </div>
+                                    </div>
 
-                                </div>
                                 <div className="mt-3 space-y-2">
+
                                     {navigation.map((item) => (
                                         <Link key={item.name} href={item.href} onClick={() => setMobileMenuOpen(false)} className="-mx-3 rounded-lg py-2 px-3 text-base font-semibold leading-7 text-black hover:bg-gray-400/10 flex items-center gap-x-2">
                                             {item.icon}
                                             {item.name}
                                         </Link>
                                     ))}
+
+                                    {isAuthenticated ? (
+                            
+                                        <>
+                                            <Link href={href + '/settings'} onClick={() => setMobileMenuOpen(false)} className="mx-3 rounded-lg py-2 px-3 text-base font-semibold leading-7 text-black hover:bg-gray-400/10 flex items-center gap-x-2">
+                                                Gérer mon compte
+                                            </Link>
+
+                                            <button onClick={handleSignOut} className="mx-3 rounded-lg py-2 px-3 text-base font-semibold leading-7 text-black hover:bg-gray-400/10 flex items-center gap-x-2">
+                                                <p className="font-semibold text-black">Déconnexion</p>
+                                            </button>
+                                        </>
+                                    ) : (
+
+                                        <Link href="/login" className="mx-3 rounded-lg py-2 px-3 text-base font-semibold leading-7 text-black hover:bg-gray-400/10 flex items-center gap-x-2">
+                                            <User className="text-black h-5" />
+                                            Connexion
+                                        </Link>
+                                    )}
+
                                 </div>
+
                             </DialogPanel>
                         </Dialog>
                     </div>

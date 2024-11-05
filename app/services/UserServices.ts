@@ -189,3 +189,33 @@ export const searchUsers = async (searchTerm: string, page: number = 1, pageSize
         throw error;
     }
 };
+
+
+export const getUserWalletById = async (): Promise<BaseResponse<any>> => {
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        throw new Error('Token manquant');
+    }
+
+    // Décoder le token
+    const decodedToken = jwt.decode(token) as DecodedToken | null;
+
+    if (!decodedToken) {
+        throw new Error('Votre session a expiré, merci de vous reconnecter.');
+    }
+
+    const id = decodedToken.id;
+    try {
+        const response = await fetch(`${getBaseUrl()}/settings/${id}/walle`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json',},
+        });
+        return await response.json();
+
+    } catch (error) {
+        console.error('Error getting user info:', error);
+        throw error;
+    }
+};

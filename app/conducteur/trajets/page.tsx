@@ -9,7 +9,7 @@ import { getDriverTrajet } from '@/app/services/DriverServices';
 import { Calendar, ChevronRight, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import DesktopNavBarDriver from '../../components/includes/Driver/DesktopNavBarDriver';
 import MobileNavBarDriver from '../../components/includes/Driver/MobileNavBarDriver';
 import UserProfil from '../../components/includes/userProfil';
@@ -19,7 +19,10 @@ import Pagination from '@/app/components/Pagination/Pagination';
 import { getAllTrajetById, updateStatusTrajet } from '@/app/services/TrajetServices';
 // import MapComponent from '@/app/components/Map/MapComponent';
 import Modal from '@/app/components/Modal/Modal';
+import { getUserWalletById } from '@/app/services/UserServices';
 const MapComponent = dynamic(() => import('@/app/components/Map/MapComponent'), { ssr: false });
+import { ArrowRight as ArrowRightIcon } from 'lucide-react'; // Assure-toi que l'icône est importée correctement
+import Link from 'next/link';
 
 const PAGE_SIZE = 3; // Nombre de trajets par page
 
@@ -27,6 +30,7 @@ export default function Page() {
 
     const router = useRouter();
     const [response, setResponse] = useState<TrajetResponse | null>(null);
+    const [resWallet, setWallet] = useState<Wallet>();
     const [data, setData] = useState<Trajet | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -94,6 +98,25 @@ export default function Page() {
         }
     };
 
+    const getUserWallet = async () => {
+
+        try {
+            const res = await getUserWalletById();
+            if (res.code === 200) {
+                setWallet(res.data);
+
+                if(res.data.balance <600){
+                    toast.error('Solde est insuffisant. Recharger votre compte pour continue');
+                }
+            }
+        } catch (err) {
+
+            setError('Error fetching user Wallet');
+            console.error('Error fetching user Wallet:', err);
+
+        }
+    };
+
     const startUp = async (id: string) => {
         const newStatus = "start";
         await updateStatusTrajet(id, newStatus);
@@ -124,6 +147,7 @@ export default function Page() {
     };
 
     useEffect(() => {
+
         if (data) {
             const updatedCoordinates = [
                 { lat: data.point_depart.lat, lng: data.point_depart.lon },
@@ -137,7 +161,11 @@ export default function Page() {
             setShowDrawer(true);
 
         }
+        getUserWallet();
+
     }, [data]);
+
+
     
     useEffect(() => {
 
@@ -147,6 +175,7 @@ export default function Page() {
     
                 setLoading(true);
                 const res = await getDriverTrajet(currentPage, pageSize);
+                
                 if (res.code === 200) {
                     const adaptedResponse: TrajetResponse = {
                         trajets: res.data,
@@ -158,6 +187,7 @@ export default function Page() {
                         setLoading(false);
                     }, 1000);
                 }
+
             } catch (err) {
     
                 setError('Error fetching user info');
@@ -166,6 +196,7 @@ export default function Page() {
     
             }
         };
+
         fetchTrajetDrivers();
 
     }, [currentPage,pageSize]);
@@ -204,19 +235,38 @@ export default function Page() {
                                             <div className="mx-auto max-w-7xl">
                                                 <div className="flex justify-between">
                                                     <div className="max-w-2xl lg:max-w-4xl lg:px-0">
-                                                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                                                        <h1 className=" text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                                                             Mes trajets
                                                         </h1>
                                                         <p className="mt-2 text-sm text-gray-500">
                                                             Liste des trajets enregistrés
                                                         </p>
                                                     </div>
+
+                                                    <div className="mt-4 flex justify-end">
+                                                        {resWallet && resWallet.balance > 600 ? (
+                                                            <button type="button" onClick={handleNavigateToNewTrajet} className="text-sm font-semibold leading-6 text-white p-1 px-4 bg-zinc-700 hover:bg-gray-800">
+                                                                Crée un trajet
+                                                            </button>
+                                                        ) : (
+                                                            <p className="text-sm text-red-500 font-bold">
+                                                                {/* Solde est insuffisant.
+                                                                    <Link href="/conducteur" className="text-blue-500">(Recharger !)
+                                                                    </Link> votre compte pour continuer. */}
+                                                            </p>
+
+                                                        )}
+                                                    </div>
+
+
+                                                    {/*
                                                     <div className="mt-4 flex justify-end">
                                                         <button type="button" onClick={handleNavigateToNewTrajet}
                                                             className="text-sm font-semibold leading-6 text-white p-1 px-4 bg-zinc-700 hover:bg-gray-800">
                                                             Crée un trajet
                                                         </button>
-                                                    </div>
+                                                    </div> */}
+
                                                 </div>
                                             </div>
                                             <section aria-labelledby="recent-heading" className="mt-10">
@@ -368,8 +418,6 @@ export default function Page() {
                     {/* Menu mobile */}
                 </main>
             </div>
-
-
 
             <Modal
                 buttonColor="bg-red-600"

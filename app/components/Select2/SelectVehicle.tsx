@@ -24,6 +24,13 @@ const SelectVehicle: React.FC<SelectVehicleProps> = ({ setVehicule, vehicles }) 
             try {
                 const apiResponse = await GetVehiculesByUserId();
                 setResponse(apiResponse);
+
+                if (apiResponse.data && apiResponse.data.length > 0 && apiResponse.data[0].id) {
+                
+                }else{
+                    toast.error('Vous devez ajouter un véhicule avant de pouvoir ajouter un trajet.');
+                }
+
             } catch (error) {
                 console.error('Error fetching vehicles:', error);
                 toast.error('Failed to fetch vehicles');
