@@ -108,7 +108,7 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
         calculateRoute();
       }
     }
-  }, [coordinates]);
+  }, [coordinates]);  // Ajoutez les dépendances appropriées
 
   return (
     <div className="">
