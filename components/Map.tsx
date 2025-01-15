@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { GoogleMap, LoadScript, Marker, Polyline, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 
 interface Coordinate {
@@ -81,7 +81,7 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
   }, [coordinates]);
 
   // Calculer et afficher l'itinéraire avec les points de passage
-  const calculateRoute = () => {
+  const calculateRoute = useCallback(() => {
     const directionsService = new google.maps.DirectionsService();
     const waypoints = coordinates.slice(1, coordinates.length - 1).map(coord => ({
       location: new google.maps.LatLng(coord.lat, coord.lng),
@@ -102,14 +102,14 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
         console.error('Directions request failed due to ' + status);
       }
     });
-  };
+  }, [coordinates]);
 
   // Calculer l'itinéraire dès que les coordonnées sont chargées
   useEffect(() => {
     if (coordinates.length >= 2) {
       calculateRoute();
     }
-  }, [coordinates]);
+  }, [coordinates, calculateRoute]);
 
   return (
     <div className="">
