@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { GoogleMap, LoadScript, Marker, Polyline, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import React, { useEffect, useState } from 'react';
+import { GoogleMap, LoadScript, Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 
 interface Coordinate {
   lat: number;
@@ -73,15 +73,8 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
     setZoom(calculatedZoom);
   };
 
-  // Mise à jour du zoom et du centre lorsque les coordonnées changent
-  useEffect(() => {
-    if (coordinates.length > 0) {
-      calculateZoomAndCenter(coordinates);
-    }
-  }, [coordinates]);
-
   // Calculer et afficher l'itinéraire avec les points de passage
-  const calculateRoute = useCallback(() => {
+  const calculateRoute = () => {
     const directionsService = new google.maps.DirectionsService();
     const waypoints = coordinates.slice(1, coordinates.length - 1).map(coord => ({
       location: new google.maps.LatLng(coord.lat, coord.lng),
@@ -102,14 +95,20 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
         console.error('Directions request failed due to ' + status);
       }
     });
-  }, [coordinates]);
+  };
 
-  // Calculer l'itinéraire dès que les coordonnées sont chargées
+  // Calculer le zoom, le centre et l'itinéraire dès que les coordonnées sont chargées
   useEffect(() => {
-    if (coordinates.length >= 2) {
-      calculateRoute();
+    if (coordinates.length > 0) {
+      // Calcul du zoom et du centre
+      calculateZoomAndCenter(coordinates);
+
+      // Calcul de l'itinéraire si plus de 1 point de coordonnée
+      if (coordinates.length >= 2) {
+        calculateRoute();
+      }
     }
-  }, [coordinates, calculateRoute]);
+  }, [coordinates]);
 
   return (
     <div className="">
