@@ -20,7 +20,6 @@ import { getAllTrajetById, updateStatusTrajet } from '@/app/services/TrajetServi
 // import MapComponent from '@/app/components/Map/MapComponent';
 import Modal from '@/app/components/Modal/Modal';
 import { getUserWalletById } from '@/app/services/UserServices';
-const MapComponent = dynamic(() => import('@/app/components/Map/Map1Component'), { ssr: false });
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 import { ArrowRight as ArrowRightIcon } from 'lucide-react'; // Assure-toi que l'icône est importée correctement
