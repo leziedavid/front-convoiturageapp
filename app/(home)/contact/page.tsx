@@ -46,7 +46,7 @@ export default function Contact() {
     return (
         <div className="bg-gray-100">
             <Toaster position="top-right" reverseOrder={false} />
-            <div className="mx-auto max-w-7xl py-16 px-6 sm:py-24 lg:px-8">
+            <div className="mx-auto max-w-7xl py-16 px-6 sm:py-24 lg:px-8 lg:py-5">
                 <div className="relative bg-white shadow-xl">
                     <h2 className="sr-only">Contact us</h2>
                     <div className="grid grid-cols-1 lg:grid-cols-3">
@@ -248,7 +248,7 @@ export default function Contact() {
                         </div>
 
                         <div className="py-10 px-6 sm:px-10 lg:col-span-2 xl:p-12">
-                            <h3 className="text-lg font-medium text-gray-900">Envoyez-nous un message</h3>
+                            <h3 className="text-lg font-bold text-[#045b27]">Envoyez-nous un message</h3>
                             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
                                 <div>
                                     <div className="flex justify-between">
@@ -303,7 +303,7 @@ export default function Contact() {
                                 </div>
 
                                 <div className="sm:col-span-2 sm:flex sm:justify-end">
-                                    <button type="submit" className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent outline-none bg-orange-500 px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:w-auto">
+                                    <button type="submit" className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent outline-none bg-[#ff904e] px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:w-auto">
                                         Envoyer
                                     </button>
                                 </div>

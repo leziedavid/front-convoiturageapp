@@ -3,8 +3,7 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../globals.css';
-import Header from '../components/includes/header';
-import HeaderClient from '../components/includes/header-client';
+import Header from '../components/includes/Header';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,11 +19,13 @@ export const metadata: Metadata = {
 const ConducteurLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <HeaderClient />
-        <main>{children}</main>
-      </body>
-    </html>
+    <body className= {`${inter.className} `}>
+    <Header />
+    <div className={`min-h-[calc(100vh_-_56px)] py-0 px-3 lg:px-0 mt-[4rem] md:mt-[4rem]`}>
+        {children}
+      </div>
+    </body>
+  </html>
   );
 };
 

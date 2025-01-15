@@ -10,7 +10,7 @@ const SectionFour: React.FC = () => {
             <section className="relative" aria-labelledby="pricing-heading">
                 <div className="relative mx-auto max-w-2xl py-10 px-6 lg:max-w-7xl lg:px-12">
                     <div className="relative">
-                        <h1 className="text-3xl font-medium tracking-tight text-gray-900 sm:text-5xl sm:leading-none lg:text-5xl">
+                        <h1 className="text-3xl font-bold tracking-tight text-[#045b27] sm:text-5xl sm:leading-none lg:text-5xl">
                         Comment voulez-vous utiliser Covoit’Ivoire ?
                         </h1>
                         <p className="mt-6 max-w-2xl text-xl text-gray-500">  Choisissez un profil pour commencer </p>

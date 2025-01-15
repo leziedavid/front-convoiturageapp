@@ -52,6 +52,7 @@ const InfoCard: React.FC<{ distance: number; arrivalTime: string }> = ({ distanc
 };
 
 const MapComponent: React.FC<MapComponentProps> = ({ coordinates }) => {
+    
     const latLngCoordinates: [number, number][] = coordinates.map(coord => [coord.lat, coord.lng]);
 
     const [distance, setDistance] = useState<number>(0);
@@ -71,8 +72,23 @@ const MapComponent: React.FC<MapComponentProps> = ({ coordinates }) => {
         }
     }, [latLngCoordinates]);
 
+    // Effet de nettoyage au démontage pour éviter les doublons de cartes
+    useEffect(() => {
+        return () => {
+            // Si la carte Leaflet existe déjà, on la détruit proprement lors du démontage
+            const mapInstance = document.getElementsByClassName('leaflet-container')[0];
+            if (mapInstance) {
+                mapInstance.remove();
+            }
+        };
+    }, []);
+
     return (
-        <MapContainer style={{ height: '100vh', width: '100%',zIndex:'0' }} zoom={5} center={[0, 0]}>
+        <MapContainer
+            style={{ height: '100vh', width: '100%', zIndex: '0' }}
+            zoom={5}
+            center={[0, 0]} // Vous pouvez aussi initialiser un centre par défaut
+        >
             <TileLayer
                 url="http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
                 // attribution='&copy; <a href="https://www.mapbox.com/">Mapbox</a>'

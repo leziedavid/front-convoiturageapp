@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import Header from '../components/includes/header';
+import Header from '../components/includes/header2';
 import HeaderClient from '../components/includes/header-client';
 
 interface LayoutProps {

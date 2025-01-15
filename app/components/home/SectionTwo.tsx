@@ -30,8 +30,8 @@ const SectionTwo: React.FC = () => {
                 <div className="mx-auto grid max-w-2xl grid-cols-1 gap-y-16 gap-x-8 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
                     <div className="lg:pt-4 lg:pl-4">
                         <div className="lg:max-w-lg">
-                            <h2 className="text-3xl font-semibold leading-8 tracking-tight text-[#f7872e]">Covoit’Ivoire</h2>
-                            <p className="mt-2 text-xl font-bold tracking-tight text-gray-900 sm:text-5xl sm:leading-none lg:text-5xl">
+                            <h2 className="text-3xl font-bold leading-8 tracking-tight text-[#f7872e]">Covoit’Ivoire</h2>
+                            <p className="mt-2 text-xl font-bold tracking-tight text-[#045b27] sm:text-5xl sm:leading-none lg:text-5xl">
                                 Découvrez notre service de covoiturage,
                             </p>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -43,7 +43,7 @@ const SectionTwo: React.FC = () => {
 
                                         <dt className="inline font-semibold text-gray-900">
 
-                                            <feature.icon className="absolute top-1 left-1 h-5 w-5 text-[#f7872e]" aria-hidden="true" />
+                                            <feature.icon className="absolute top-1 left-1 h-5 w-5 text-[#045b27]" aria-hidden="true" />
                                             {feature.name}
                                         </dt>
                                         <dd className="inline">{feature.description}</dd>

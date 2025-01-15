@@ -289,7 +289,7 @@ const Detail: FC = () => {
 
                     <div>
                         
-                        <button className="p-2 text-white bg-[#f7872e] text-center h-full w-full py-3 rounded-b-xl md:rounded-bl-none md:rounded-r-xl flex justify-center items-center shadow-sm px-6 gap-2 text-base" type="button" onClick={handleSearch} >
+                        <button className="p-2 text-white bg-[#ff904e] text-center h-full w-full py-3 rounded-b-xl md:rounded-bl-none md:rounded-r-xl flex justify-center items-center shadow-sm px-6 gap-2 text-base" type="button" onClick={handleSearch} >
                             Rechercher
                         </button>
                     </div>
@@ -318,7 +318,7 @@ const Detail: FC = () => {
                 
                 <div className="mx-4 lg:mx-auto max-w-5xl py-7">
 
-                    <div className="flex justify-center text-2xl md:text-3xl font-bold">
+                    <div className="flex text-[#ff904e] justify-center text-2xl md:text-3xl font-bold">
                         {/* Trajet trouvé pour Abidjan à Agboville  */}
                         {message}
                     </div>
@@ -327,7 +327,7 @@ const Detail: FC = () => {
                     {response ? (
                             response?.trajets.map((trajet, index) => (
 
-                                <div key={index} onClick={() => navigateTo(`/trajets/details/${trajet.id}`)} className="relative bg-white min-h-40 rounded-xl shadow-xl shadow-gray-200 border-none p-4 ring-offset-2 ring-2 ring-gray-300 hover:ring-[#f7872e] hover:shadow-none hover:cursor-pointer" >
+                                <div key={index} onClick={() => navigateTo(`/trajets/details/${trajet.id}`)} className="relative bg-white min-h-40 rounded-xl shadow-xl shadow-gray-200 border-none p-4 ring-offset-2 ring-2 ring-gray-300 hover:ring-[#ff904e] hover:shadow-none hover:cursor-pointer" >
                                     
                                     <div className="flex justify-between py-4">
                                         <div className="w-full md:w-2/3">
@@ -345,7 +345,7 @@ const Detail: FC = () => {
                                                     </div>
                                                 </div>
                                                 <div className="w-auto flex justify-center items-center">
-                                                    <div className="border p-[1px] w-10 md:w-40 bg-black"></div>
+                                                    <div className="border p-[1px] w-10 md:w-40 bg-[#ff904e]"></div>
                                                     <ChevronRight className="w-4 font-bold text-xl" />
                                                 </div>
                                                 <div>
@@ -363,7 +363,7 @@ const Detail: FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="hidden md:block text-base md:text-xl font-semibold text-orange-500">
+                                        <div className="hidden md:block text-bold md:text-xl font-semibold text-[#ff904e]">
                                             {trajet.price} OXF
                                         </div>
 
@@ -378,7 +378,7 @@ const Detail: FC = () => {
                                             <div className="flex items-center">
                                                 <div className="relative">
                                                     <Image src={trajet?.utilisateur?.photo_url ? trajet.utilisateur.photo_url : DEFAULT_IMAGE_URL} alt="" width={36} height={36} className="inline-block h-9 w-9 rounded-full"/>
-                                                    <div className="w-4 h-4 absolute right-0 bottom-0 rounded-full bg-[#f7872e] border-2 border-white"></div>
+                                                    <div className="w-4 h-4 absolute right-0 bottom-0 rounded-full bg-[#ff904e] border-2 border-white"></div>
                                                 </div>
                                                 <div className="ml-3 flex flex-col text-left">
                                                     <p className="text-sm font-medium text-gray-900 group-hover:text-gray-600">
@@ -415,7 +415,7 @@ const Detail: FC = () => {
             <div className="bg-gray-50 py-20">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl lg:mx-0">
-                        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Stay on top of customer support</h2>
+                        <h2 className="text-3xl font-bold tracking-tight text-[#ff904e] sm:text-4xl">Stay on top of customer support</h2>
                         <p className="mt-6 text-lg leading-8 text-gray-600">
                             Lorem ipsum dolor sit amet consect adipisicing elit. Possimus magnam voluptatum cupiditate veritatis in accusamus quisquam.
                         </p>
@@ -426,7 +426,7 @@ const Detail: FC = () => {
                             {features.map((feature) => (
                                 <div key={feature.name} className="flex flex-col">
                                     <dt className="text-base font-semibold leading-7 text-gray-900">
-                                        <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-black">
+                                        <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-[#ff904e]">
                                             <Icon name={feature.icon} className="text-white" />
                                         </div>
                                         {feature.name}
@@ -434,7 +434,7 @@ const Detail: FC = () => {
                                     <dd className="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-600">
                                         <p className="flex-auto">{feature.description}</p>
                                         <p className="mt-6">
-                                            <a href={feature.href} className="text-base font-semibold leading-7 text-black">
+                                            <a href={feature.href} className="text-base font-semibold leading-7 text-[#ff904e]">
                                                 Learn more <span aria-hidden="true">→</span>
                                             </a>
                                         </p>

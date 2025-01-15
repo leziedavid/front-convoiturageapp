@@ -12,7 +12,7 @@ const TrajetNotFound: React.FC = () => {
                 <div className="h-44 flex justify-center items-center">
                     <div className="flex flex-col items-center">
                         <Route name="Route" className="h-20 w-20 font-extralight text-[#f7872e]" />
-                        <div className="text-center text-lg font-bold">Aucune trajet</div>
+                        <div className="text-center text-lg font-bold">Oups, aucun trajet n'a été trouvé.</div>
                         <div className="text-center text-sm font-semibold">Veuillez crée un nouveau trajet pour commencer à utilisé notre solution</div>
                     </div>
                 </div>

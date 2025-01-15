@@ -11,7 +11,11 @@ import { DateHeur } from '@/app/services/dateUtils';
 import { PlaceOrder } from '@/app/services/CommandeService';
 import jwt from 'jsonwebtoken';
 import toast, { Toaster } from 'react-hot-toast';
-import MapComponent from '@/app/components/Map/MapComponent';
+import MapComponent from '@/app/components/Map/Map1Component';
+import MultipleMarkersMap from '@/app/components/Map/MultipleMarkers';
+
+import dynamic from "next/dynamic";
+const DynamicMapComponent = dynamic(() => import("@/app/components/Map/MapsComponent"), { ssr: false });
 
 interface DecodedToken {
     id: string;
@@ -52,11 +56,9 @@ const Detail: React.FC = () => {
 
 
     useEffect(() => {
-
         if(trajetId){
             fetchTrajetDrivers();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -165,118 +167,121 @@ const Detail: React.FC = () => {
                 </div>
                 <div className="px-5 md:mx-auto max-w-7xl py-4">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {/* Premier composant : Informations */}
-    <div className="flex flex-col h-full"> {/* Flexbox pour occuper toute la hauteur */}
-        <div className="bg-white flex-1 rounded-xl shadow-md shadow-gray-200 border-none p-4 ring-offset-2 ring-2 ring-gray-300">
-            <div className="grid grid-cols-1 justify-between py-4">
-            
-                <div className="flex justify-between gap-2 mb-5">
-                    <div>
-                        <div className="text-center md:text-left">
-                            <span className="text-base text-white font-bold bg-stone-800 p-1 rounded-lg">
-                                {DateHeur(response?.temps_depart_prevu)}
-                            </span>
-                        </div>
-                        <div className="text-center md:text-left">
-                            <span className="text-sm font-bold w-16">
-                                {response?.ville_depart}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="w-auto flex justify-center items-center">
-                        <div className="border p-[1px] w-10 md:w-40 bg-black"></div>
-                    </div>
-                    <div>
-                        <div className="text-center md:text-left">
-                            <span className="text-base text-white font-bold bg-stone-800 p-1 rounded-lg">
-                                {DateHeur(response?.temps_arrivee_prevu)}
-                            </span>
-                        </div>
-                        <div className="text-center md:text-left">
-                            <span className="text-sm font-bold">
-                                {response?.ville_arrivee}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Premier composant : Informations */}
+                        <div className="flex flex-col h-full"> {/* Flexbox pour occuper toute la hauteur */}
+                            <div className="bg-white flex-1 rounded-xl shadow-md shadow-gray-200 border-none p-4 ring-offset-2 ring-2 ring-gray-300">
+                                <div className="grid grid-cols-1 justify-between py-4">
 
-                <div className="border-t-4 py-2 pt-4 flex justify-center">
-                    <div className="text-base md:text-xl font-semibold text-orange-500">
-                        {response?.price} OXF
-                    </div>
-                </div>
+                                    <div className="flex justify-between gap-2 mb-5">
+                                        <div>
+                                            <div className="text-center md:text-left">
+                                                <span className="text-base text-white font-bold bg-stone-800 p-1 rounded-lg">
+                                                    {DateHeur(response?.temps_depart_prevu)}
+                                                </span>
+                                            </div>
+                                            <div className="text-center md:text-left">
+                                                <span className="text-sm font-bold w-16">
+                                                    {response?.ville_depart}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="w-auto flex justify-center items-center">
+                                            <div className="border p-[1px] w-10 md:w-40 bg-black"></div>
+                                        </div>
+                                        <div>
+                                            <div className="text-center md:text-left">
+                                                <span className="text-base text-white font-bold bg-stone-800 p-1 rounded-lg">
+                                                    {DateHeur(response?.temps_arrivee_prevu)}
+                                                </span>
+                                            </div>
+                                            <div className="text-center md:text-left">
+                                                <span className="text-sm font-bold">
+                                                    {response?.ville_arrivee}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-                    <div className="px-4 py-5 sm:px-6">
-                        <a href="#" className="group block flex-shrink-0">
-                            <div className="flex items-center">
-                                <div className="relative">
-                                    <Image src={response?.utilisateur?.photo_url ? response.utilisateur.photo_url : DEFAULT_IMAGE_URL} alt="" width={36} height={36} className="inline-block h-9 w-9 rounded-full" />
-                                    <CheckIcon className="w-4 h-4 absolute right-0 bottom-0 text-white bg-orange-600 rounded-full" />
+                                    <div className="border-t-4 py-2 pt-4 flex justify-center">
+                                        <div className="text-base md:text-xl font-semibold text-orange-500">
+                                            {response?.price} OXF
+                                        </div>
+                                    </div>
+
+                                    <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+                                        <div className="px-4 py-5 sm:px-6">
+                                            <a href="#" className="group block flex-shrink-0">
+                                                <div className="flex items-center">
+                                                    <div className="relative">
+                                                        <Image src={response?.utilisateur?.photo_url ? response.utilisateur.photo_url : DEFAULT_IMAGE_URL} alt="" width={36} height={36} className="inline-block h-9 w-9 rounded-full" />
+                                                        <CheckIcon className="w-4 h-4 absolute right-0 bottom-0 text-white bg-orange-600 rounded-full" />
+                                                    </div>
+                                                    <div className="ml-3">
+                                                        <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex">{response?.utilisateur?.username}</p>
+                                                        <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">Conducteur</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
+                                            <dl className="sm:divide-y sm:divide-gray-200">
+                                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                                                    <dt className="text-sm font-medium text-gray-500">Matricule</dt>
+                                                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{response?.vehicule.plaque}</dd>
+                                                </div>
+                                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                                                    <dt className="text-sm font-medium text-gray-500">Modèle voiture</dt>
+                                                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{response?.vehicule.modele}</dd>
+                                                </div>
+                                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                                                    <dt className="text-sm font-medium text-gray-500">Contact</dt>
+                                                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{response?.utilisateur.contact_number}</dd>
+                                                </div>
+                                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                                                    <dt className="text-sm font-medium text-gray-500">Appréciation</dt>
+                                                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Meilleur conducteur</dd>
+                                                </div>
+                                                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
+                                                    <dt className="text-sm font-medium text-gray-500">Durée du trajet</dt>
+                                                    <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Meilleur conducteur</dd>
+                                                </div>
+                                            </dl>
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <div className="ml-3">
-                                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 flex">{response?.utilisateur?.username}</p>
-                                    <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">Conducteur</p>
+
+                                <div className="mt-6 flex items-center justify-end gap-x-6">
+                                    <button onClick={handleClick} type="button" className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent outline-none bg-[#f7872e] px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:w-auto">
+                                        Commander
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <DynamicMapComponent coordinates={coordinates} title="Trajet" />
+
+
+                        {/* <MultipleMarkersMap coordinates={coordinates}  /> */}
+
+                        {/* Deuxième composant : MapComponent */}
+                        <div className="bg-white flex-1 rounded-xl shadow-md shadow-gray-200 border-none p-4 ring-offset-2 ring-2 ring-gray-300">
+                            {/* <MapComponent coordinates={coordinates} /> */}
+                            <div className="flex justify-center flex-1"> {/* Permet à l'image de prendre toute la hauteur disponible */}
+                                <div className="h-96 w-full">
+                                    <Image src="/img/image copy 3.png"
+                                        alt=""
+                                        layout="responsive"
+                                        width={1200}
+                                        height={800}
+                                    />
                                 </div>
                             </div>
-                        </a>
+                        </div>
+
                     </div>
-                    <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-                        <dl className="sm:divide-y sm:divide-gray-200">
-                            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                                <dt className="text-sm font-medium text-gray-500">Matricule</dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{response?.vehicule.plaque}</dd>
-                            </div>
-                            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                                <dt className="text-sm font-medium text-gray-500">Modèle voiture</dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{response?.vehicule.modele}</dd>
-                            </div>
-                            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                                <dt className="text-sm font-medium text-gray-500">Contact</dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{response?.utilisateur.contact_number}</dd>
-                            </div>
-                            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                                <dt className="text-sm font-medium text-gray-500">Appréciation</dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Meilleur conducteur</dd>
-                            </div>
-                            <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6">
-                                <dt className="text-sm font-medium text-gray-500">Durée du trajet</dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">Meilleur conducteur</dd>
-                            </div>
-                        </dl>
-                    </div>
-                </div>
-
-            </div>
-
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-                <button onClick={handleClick} type="button" className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent outline-none bg-[#f7872e] px-6 py-2 text-base font-medium text-white shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 sm:w-auto">
-                    Commander
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    {/* Deuxième composant : MapComponent */}
-    <div className="bg-white flex-1 rounded-xl shadow-md shadow-gray-200 border-none p-4 ring-offset-2 ring-2 ring-gray-300">
-    <MapComponent coordinates={coordinates} />
-        <div className="flex justify-center flex-1"> {/* Permet à l'image de prendre toute la hauteur disponible */}
-            <div className="h-96 w-full">
-                <Image
-                    src="/img/image copy 3.png"
-                    alt=""
-                    layout="responsive"
-                    width={1200}
-                    height={800}
-                />
-            </div>
-        </div>
-    </div>
-
-</div>
-
 
                 </div>
             </div>

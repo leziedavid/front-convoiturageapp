@@ -2,16 +2,25 @@ import SectionFive from '../components/home/SectionFive'
 import SectionFour from '../components/home/SectionFour'
 import SectionSix from '../components/home/SectionSix'
 import SectionTwo from '../components/home/SectionTwo'
-import SectionZero from '../components/home/SectionZero'
+import ActionItems from '../components/home/ActionItems'
+import { Hero3 } from '@/components/Hero3'
+import { Feature4 } from '@/components/Feature4'
+import { Footer } from '@/components/Footer'
+import { Pub } from '@/components/Pub'
 
 export default function page() {
     return (
         <>
-            <SectionZero/>
+            <Hero3/>
+            <ActionItems/>
+            <Pub/>
+            {/* <Feature4/> */}
+            <Footer/>
+            
+            {/* <SectionZero/>
             <SectionTwo/>
-            {/* <SectionFive/> */}
             <SectionFour/>
-            <SectionSix/>
+            <SectionSix/> */}
         </>
 
     )
