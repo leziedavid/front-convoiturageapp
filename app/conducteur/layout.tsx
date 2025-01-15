@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '../globals.css';
-import Header from '../components/includes/Header';
+import Header from '../components/includes/header';
 
 interface LayoutProps {
   children: ReactNode;

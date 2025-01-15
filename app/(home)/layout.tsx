@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 const inter = Inter({ subsets: ["latin"] });
 import HeaderClient from '../components/includes/header-client';
-import Header from "../components/includes/Header";
+import Header from "../components/includes/header";
 
 export const metadata: Metadata = {
   title: "Covoitivoire",

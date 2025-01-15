@@ -5,8 +5,9 @@ import { ReactNode } from 'react';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import Header from '../components/includes/header2';
+// import Header from '../components/includes/header2';
 import HeaderClient from '../components/includes/header-client';
+import Header from '../components/includes/header';
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,7 +26,7 @@ const CompteLayout: React.FC<LayoutProps> = ({ children }) => {
     <html lang="en">
       <body className={inter.className}>
             <main>
-                <HeaderClient/>
+                <Header/>
                 {children}
             </main>
         </body>
