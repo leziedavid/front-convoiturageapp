@@ -141,7 +141,7 @@ const Detail: React.FC = () => {
                                 </div>
 
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                                    <Label htmlFor="email">viille d'arrivée </Label>
+                                    <Label htmlFor="email">viille d&apos;arrivée </Label>
                                     <Input disabled defaultValue={response?.ville_arrivee} type="text" placeholder="" />
                                 </div>
 
@@ -152,7 +152,7 @@ const Detail: React.FC = () => {
                                 </div>
 
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
-                                    <Label htmlFor="email">Heur d'arrivée</Label>
+                                    <Label htmlFor="email">Heur d&apos;arrivée</Label>
                                     <Input disabled defaultValue={DateHeur(response?.temps_arrivee_prevu)} type="text" placeholder="" />
                                 </div>
 

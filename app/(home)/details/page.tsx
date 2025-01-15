@@ -220,7 +220,7 @@ const Detail: FC = () => {
                     <div className="mx-auto max-w-2xl pt-20 sm:pt-24">
                         <div className="text-center">
                             <h1 className="text-2xl font-bold tracking-tight text-white sm:text-4xl uppercase">Trouver un trajet</h1>
-                            <p className="mt-6 text-1xl  font-bold leading-8 text-gray-200"> Réservez votre course à l'avance pour pouvoir vous détendre le jour même.
+                            <p className="mt-6 text-1xl  font-bold leading-8 text-gray-200"> Réservez votre course à l&apos;avance pour pouvoir vous détendre le jour même.
                             </p>
                         </div>
                     </div>
@@ -389,7 +389,7 @@ const Detail: FC = () => {
                                     <div className="h-44 flex justify-center items-center">
                                         <div className="flex flex-col items-center">
                                             <Route name="Route" className="h-20 w-20 font-extralight text-[#f7872e]" />
-                                            <div className="text-center text-lg font-bold">Oups, aucun trajet n'a été trouvé.</div>
+                                            <div className="text-center text-lg font-bold">Oups, aucun trajet n&apos;a été trouvé.</div>
                                             <div className="text-center text-red-500 text-sm font-semibold">{error}</div>
                                         </div>
                                     </div>

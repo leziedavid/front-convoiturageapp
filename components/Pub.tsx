@@ -10,9 +10,9 @@ import { Input } from "@/components/ui/input";
 export const Pub = () => {
     const [selectedDate, setSelectedDate] = React.useState<string | null>(null);
 
-    // Fonction qui sera appelée lorsqu'une date est sélectionnée
+    // Fonction qui sera appelée lorsqu&apos;une date est sélectionnée
     const handleDateChange = (formattedDate: string) => {
-        setSelectedDate(formattedDate); // Mettre à jour l'état avec la date sélectionnée
+        setSelectedDate(formattedDate); // Mettre à jour l&apos;état avec la date sélectionnée
     };
 
     return (
@@ -29,7 +29,9 @@ export const Pub = () => {
                                 Générez des revenus selon votre propre emploi du temps en effectuant des livraisons, des courses,
                                 ou même les deux.
                             </p>
-                            <p className='text-xl leading-relaxed tracking-tight text-muted-foreground max-w-md text-left'> Consultez les trajets passés, les suggestions personnalisées, les ressources d'aide et plus encore.</p>
+                            <p className='text-xl leading-relaxed tracking-tight text-muted-foreground max-w-md text-left'>
+                                Consultez les trajets passés, les suggestions personnalisées, les ressources d&apos;aide et plus encore.
+                            </p>
                         </div>
 
                     </div>

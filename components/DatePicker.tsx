@@ -72,7 +72,7 @@ export function CalendarDatePicker({
       {/* Permettre la modification de l'heure directement */}
       {date && (
         <div className="mt-2">
-          <label htmlFor="time" className="block text-sm text-gray-700">Modifier l'heure :</label>
+          <label htmlFor="time" className="block text-sm text-gray-700">Modifier l&apos;heure :</label>
           <input
             type="time"
             id="time"

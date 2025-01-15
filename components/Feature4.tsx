@@ -14,13 +14,12 @@ export const Feature4 = () => (
           </div>
           <div className="flex gap-2 flex-col">
             <h2 className="text-xl md:text-3xl md:text-5xl tracking-tighter lg:max-w-xl font-bold text-left">
-                Bientôt chez Covoit’Ivoire
+                Bientôt chez Covoit&apos;Ivoire
             </h2>
             <p className="text-lg max-w-xl lg:max-w-sm leading-relaxed tracking-tight text-muted-foreground text-left">
-              Covoit’Ivoire est une plateforme de mise en relation entre les conducteurs et les passagers. Trouver des trajets à proximité et gagnez du temps.
-              L'application mobile vous offre une expérience plus fluide et pratique pour la prise de commande.
+              Covoit&apos;Ivoire est une plateforme de mise en relation entre les conducteurs et les passagers. Trouver des trajets à proximité et gagnez du temps.
+              L&apos;application mobile vous offre une expérience plus fluide et pratique pour la prise de commande.
             </p>
-
 
             <div className="mx-auto max-w-sm sm:max-w-2xl mt-10 grid grid-cols-1 sm:grid-cols-2 items-center gap-6">
               <div className="p-5 flex gap-3 justify-center sm:justify-start items-center focus:ring focus:ring-gray-500 hover:cursor-not-allowed relative rounded-lg bg-gray-300 shadow bg-gradient-to-r from-gray-200 to-blue-200">
@@ -40,7 +39,7 @@ export const Feature4 = () => (
         <div className="bg-muted rounded-md w-full aspect-video h-full flex-1 overflow-hidden">
           <img
             src="/img/image copy 4.png"
-            alt="Covoiturage en Côte d'Ivoire"
+            alt="Covoiturage en Côte d&apos;Ivoire"
             className="w-full h-full object-cover object-center"
           />
         </div>
