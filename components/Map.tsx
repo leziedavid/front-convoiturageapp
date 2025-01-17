@@ -34,6 +34,12 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
     anchor: { x: 16, y: 16 },  // Point d'ancrage en utilisant des coordonnées relatives en pourcentage
   };
 
+  // const vehicleIcon: google.maps.Icon = {
+  //   url: '/path/to/your/icon.png',
+  //   scaledSize: new google.maps.Size(32, 32),
+  //   anchor: new google.maps.Point(16, 16),
+  // };
+
   // Vérification si la clé API est définie
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
@@ -137,7 +143,7 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
             {coordinates.map((coord, index) => (
               <Marker key={index}
                 position={{ lat: coord.lat, lng: coord.lng }}
-                icon={index === 0 ? vehicleIcon : undefined} // Utiliser l'icône personnalisée pour le premier point
+                // icon={index === 0 ? vehicleIcon : undefined} // Utiliser l'icône personnalisée pour le premier point
                 title={`Point ${index + 1}`}
               />
             ))}
