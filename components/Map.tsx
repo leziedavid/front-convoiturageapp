@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
 
 interface Coordinate {
   lat: number;
@@ -9,20 +9,23 @@ interface Coordinate {
 }
 
 interface MapProps {
-  coordinates: Coordinate[];
-  title: string;
+  coordinates: Coordinate[]; // Tableau de coordonnées pour afficher les points
+  title: string; // Titre pour la carte (facultatif)
 }
 
 const Map: React.FC<MapProps> = ({ coordinates, title }) => {
-  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-  const [zoom, setZoom] = useState(10);
-  const [center, setCenter] = useState<Coordinate>({ lat: 0, lng: 0 });
-  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false); // État pour savoir si Google Maps est chargé
+  const [zoom, setZoom] = useState(10); // Zoom par défaut
+  const [center, setCenter] = useState<Coordinate>({ lat: 0, lng: 0 }); // Centre de la carte
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null); // Résultat des directions
 
-  const mapContainerStyle = { width: '100%', height: '600px' };
+  const mapContainerStyle = {
+    width: '100%',
+    height: '600px',
+  };
 
   const vehicleIcon = {
-    url: 'https://i.ibb.co/cyvcpfF/uberx.png',
+    url: 'https://i.ibb.co/cyvcpfF/uberx.png', // URL de l'image
     scaledSize: { width: 32, height: 32 },
     anchor: { x: 16, y: 16 },
   };
@@ -34,7 +37,8 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
     return <div>Error: Google Maps API Key is missing!</div>;
   }
 
-  const calculateZoomAndCenter = (coordinates: Coordinate[]) => {
+  // Centralise le calcul du zoom et du centre
+  const calculateZoomAndCenter = useCallback((coordinates: Coordinate[]) => {
     if (coordinates.length === 0) return;
 
     const lats = coordinates.map(coord => coord.lat);
@@ -46,18 +50,17 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
 
     const centerLat = (minLat + maxLat) / 2;
     const centerLng = (minLng + maxLng) / 2;
-
     setCenter({ lat: centerLat, lng: centerLng });
 
-    const latDiff = maxLat - minLat;
-    const lngDiff = maxLng - minLng;
-    const maxDiff = Math.max(latDiff, lngDiff);
-
+    const maxDiff = Math.max(maxLat - minLat, maxLng - minLng);
     const calculatedZoom = maxDiff > 10 ? 6 : maxDiff > 5 ? 8 : 10;
     setZoom(calculatedZoom);
-  };
+  }, []);
 
+  // Calcule l'itinéraire en fonction des coordonnées
   const calculateRoute = useCallback(() => {
+    if (coordinates.length < 2) return;
+
     const directionsService = new google.maps.DirectionsService();
     const waypoints = coordinates.slice(1, coordinates.length - 1).map(coord => ({
       location: new google.maps.LatLng(coord.lat, coord.lng),
@@ -67,7 +70,7 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
     const request: google.maps.DirectionsRequest = {
       origin: new google.maps.LatLng(coordinates[0].lat, coordinates[0].lng),
       destination: new google.maps.LatLng(coordinates[coordinates.length - 1].lat, coordinates[coordinates.length - 1].lng),
-      waypoints: waypoints,
+      waypoints,
       travelMode: google.maps.TravelMode.DRIVING,
     };
 
@@ -83,18 +86,20 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
   useEffect(() => {
     if (coordinates.length > 0) {
       calculateZoomAndCenter(coordinates);
-    }
-    if (coordinates.length >= 2) {
       calculateRoute();
     }
-  }, [coordinates, calculateRoute]);
+  }, [coordinates, calculateZoomAndCenter, calculateRoute]);
+
+  const onLoadGoogleMaps = useCallback(() => {
+    setGoogleMapsLoaded(true);
+  }, []);
 
   return (
-    <div className="">
+    <div>
       <LoadScript
         googleMapsApiKey={googleMapsApiKey}
         libraries={['places']}
-        onLoad={() => setGoogleMapsLoaded(true)}
+        onLoad={onLoadGoogleMaps}
       >
         {googleMapsLoaded ? (
           <GoogleMap
@@ -102,17 +107,11 @@ const Map: React.FC<MapProps> = ({ coordinates, title }) => {
             center={center}
             zoom={zoom}
           >
-            {directions && (
-              <DirectionsRenderer
-                directions={directions}
-                options={{ suppressMarkers: true }}
-              />
-            )}
-
+            {directions && <DirectionsRenderer directions={directions} options={{ suppressMarkers: true }} />}
             {coordinates.map((coord, index) => (
               <Marker
                 key={index}
-                position={{ lat: coord.lat, lng: coord.lng }}
+                position={coord}
                 icon={index === 0 ? vehicleIcon : undefined}
                 title={`Point ${index + 1}`}
               />
