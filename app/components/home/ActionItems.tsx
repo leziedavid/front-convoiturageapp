@@ -16,7 +16,7 @@ const ActionItems: React.FC = () => {
                             <p className="text-xs md:text-sm text-gray-700">
                                 Travaillez selon vos propres horaires, recevez des commandes et intégrez une grande équipe internationale.
                             </p>
-                            <Link href="/details">
+                            <Link href="/driver">
                                 <Button className="mt-4 bg-[#ff904e] text-xs md:text-base">Devenir chauffeur</Button> {/* Bouton Détails */}
                             </Link>
                         </div>
@@ -37,7 +37,7 @@ const ActionItems: React.FC = () => {
                             <p className="text-xs md:text-sm text-gray-700">
                                 Réservez votre course à l&apos;avance pour pouvoir vous détendre le jour même.
                             </p>
-                            <Link href="/details">
+                            <Link href="/passenger">
                                 <Button className="mt-4 bg-[#ff904e] text-xs md:text-base">Compte passager</Button> {/* Bouton Détails */}
                             </Link>
                         </div>
